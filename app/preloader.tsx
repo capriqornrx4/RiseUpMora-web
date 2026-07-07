@@ -2,6 +2,7 @@
 
 import Image from "next/image";
 import { useEffect, useState } from "react";
+import riseUpMoraLogo from "../assets/Rise Up Mora logo.png";
 
 const FADE_START_MS = 1900;
 const REMOVE_MS = 2450;
@@ -35,10 +36,8 @@ export default function Preloader() {
           <span className="preloader__orbit preloader__orbit--inner" aria-hidden="true" />
           <Image
             className="preloader__logo"
-            src="/assets/rise-up-mora-logo.png"
+            src={riseUpMoraLogo}
             alt=""
-            width={830}
-            height={535}
             priority
           />
         </div>

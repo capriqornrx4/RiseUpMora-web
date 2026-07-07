@@ -2154,7 +2154,7 @@ html {
   width: min(72vw, 44rem);
   aspect-ratio: 1;
   border-radius: 999px;
-  background: radial-gradient(circle, rgb(51 174 218 / 18%) 0%, rgb(246 196 48 / 10%) 42%, transparent 70%);
+  background: radial-gradient(circle, transparent 0 28%, rgb(246 196 48 / 10%) 48%, transparent 70%);
   animation: ambient-pulse 2s ease-in-out infinite;
 }
 
@@ -2181,11 +2181,6 @@ html {
   width: 100%;
   height: auto;
   object-fit: contain;
-  filter:
-    contrast(1.08)
-    saturate(1.06)
-    drop-shadow(0 1px 1px rgb(0 36 84 / 24%))
-    drop-shadow(0 14px 20px rgb(0 8 30 / 36%));
   animation: logo-float 1.8s 700ms ease-in-out infinite;
 }
 
