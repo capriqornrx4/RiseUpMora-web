@@ -1,10 +1,103 @@
 import Image from "next/image";
+import chairPersonOne from "../assets/Chairs/3.png";
+import chairPersonTwo from "../assets/Chairs/4.png";
+import chairPersonThree from "../assets/Chairs/5.png";
 import AboutStory from "./about-story";
 import EventTimeline from "./event-timeline";
 import Preloader from "./preloader";
 import RotatingHeadline from "./rotating-headline";
 import SiteBackground from "./site-background";
 import SiteHeader from "./site-header";
+
+const partnershipTiers = [
+  {
+    name: "Platinum Partner",
+    label: "Flagship presence",
+    description:
+      "Lead the Rise Up Mora 2026 industry experience with maximum visibility across student touchpoints.",
+    benefits: [
+      "Premium brand placement",
+      "Priority session opportunities",
+      "Featured fair presence",
+    ],
+  },
+  {
+    name: "Gold Partner",
+    label: "High-impact engagement",
+    description:
+      "Connect directly with career-ready undergraduates through focused exposure and event participation.",
+    benefits: [
+      "Prominent event visibility",
+      "Workshop collaboration",
+      "Recruitment fair access",
+    ],
+  },
+  {
+    name: "Silver Partner",
+    label: "Focused reach",
+    description:
+      "Build meaningful awareness among motivated students while supporting their professional growth.",
+    benefits: [
+      "Partner recognition",
+      "Student network access",
+      "Digital promotion support",
+    ],
+  },
+] as const;
+
+const galleryCards = Array.from({ length: 12 }, (_, index) => ({
+  title: `Gallery ${String(index + 1).padStart(2, "0")}`,
+  label: index % 3 === 0 ? "Workshop" : index % 3 === 1 ? "Fair" : "Community",
+}));
+
+const chairPersons = [
+  {
+    name: "Person 1",
+    role: "Event Chairperson",
+    image: chairPersonOne,
+  },
+  {
+    name: "Person 2",
+    role: "Event Chairperson",
+    image: chairPersonTwo,
+  },
+  {
+    name: "Person 3",
+    role: "Event Chairperson",
+    image: chairPersonThree,
+  },
+] as const;
+
+const footerSocialLinks = [
+  { label: "Facebook", shortLabel: "Fb", href: "https://www.facebook.com/IEEEUOM" },
+  { label: "LinkedIn", shortLabel: "In", href: "https://www.linkedin.com/company/ieeeuom" },
+  { label: "Instagram", shortLabel: "Ig", href: "https://www.instagram.com/ieeeuom" },
+  { label: "IEEE UoM", shortLabel: "Web", href: "https://ieee.uom.lk/" },
+] as const;
+
+const footerQuickLinks = [
+  { label: "Home", href: "#home" },
+  { label: "About Us", href: "#about" },
+  { label: "Timeline", href: "#timeline" },
+  { label: "Partners", href: "#partner" },
+  { label: "Gallery", href: "#gallery" },
+  { label: "Contact", href: "#contact" },
+] as const;
+
+const footerEvents = [
+  {
+    title: "Registrations Opening",
+    date: "July 17th, 2026",
+  },
+  {
+    title: "Registrations Closing",
+    date: "July 29th, 2026",
+  },
+  {
+    title: "Internship & Mock Interview Fair",
+    date: "August 6th, 2026",
+  },
+] as const;
 
 export default function Home() {
   return (
@@ -116,29 +209,156 @@ export default function Home() {
 
         <EventTimeline />
 
+        <section className="partner-tiers" id="partner">
+          <div className="partner-tiers__intro">
+            <p>Partner with us</p>
+            <h2>Partnership Tiers</h2>
+            <span>
+              Choose the level of engagement that matches your organization&apos;s
+              hiring goals, brand presence, and commitment to developing the next
+              generation of industry-ready talent.
+            </span>
+          </div>
+
+          <div className="partner-tier-grid">
+            {partnershipTiers.map((tier, index) => (
+              <article className="partner-tier-card" key={tier.name}>
+                <div className="partner-tier-card__topline">
+                  <span>{String(index + 1).padStart(2, "0")}</span>
+                  <small>{tier.label}</small>
+                </div>
+                <h3>{tier.name}</h3>
+                <p>{tier.description}</p>
+                <ul>
+                  {tier.benefits.map((benefit) => (
+                    <li key={benefit}>{benefit}</li>
+                  ))}
+                </ul>
+                <a href="#contact">
+                  Discuss this tier <span aria-hidden="true">-&gt;</span>
+                </a>
+              </article>
+            ))}
+          </div>
+        </section>
+
+        <section className="gallery-section" id="gallery">
+          <div className="gallery-heading">
+            <p>Gallery</p>
+            <h2>Moments from Rise Up Mora</h2>
+          </div>
+
+          <div className="gallery-grid" aria-label="Rise Up Mora gallery placeholders">
+            {galleryCards.map((card, index) => (
+              <article
+                className={`gallery-card gallery-card--${index + 1}`}
+                key={card.title}
+              >
+                <div>
+                  <span>{card.label}</span>
+                  <h3>{card.title}</h3>
+                </div>
+              </article>
+            ))}
+          </div>
+        </section>
+
+        <section className="chair-section" id="chairpersons">
+          <div className="chair-heading">
+            <p>Event Leadership</p>
+            <h2>Event Chairpersons</h2>
+          </div>
+
+          <div className="chair-grid">
+            {chairPersons.map((person) => (
+              <article className="chair-card" key={person.name}>
+                <div className="chair-card__image">
+                  <Image
+                    src={person.image}
+                    alt={person.name}
+                    sizes="(max-width: 48rem) 88vw, (max-width: 62rem) 28vw, 22rem"
+                  />
+                </div>
+                <div className="chair-card__content">
+                  <span>{person.role}</span>
+                  <h3>{person.name}</h3>
+                </div>
+              </article>
+            ))}
+          </div>
+        </section>
+
         <section className="home-sections" aria-label="Explore Rise Up Mora">
-          <article id="partner">
-            <span>01</span>
-            <h2>Partner</h2>
-            <p>Join the organizations helping ambitious ideas move forward.</p>
-          </article>
-          <article id="gallery">
-            <span>02</span>
-            <h2>Gallery</h2>
-            <p>See the energy, collaboration, and highlights from our journey.</p>
-          </article>
           <article id="contact">
-            <span>03</span>
+            <span>01</span>
             <h2>Contact</h2>
             <p>Connect with the team and start a conversation.</p>
           </article>
           <article id="sign-in">
-            <span>04</span>
+            <span>02</span>
             <h2>Member access</h2>
             <p>Sign in to access your Rise Up Mora workspace.</p>
           </article>
         </section>
       </main>
+
+      <footer className="site-footer">
+        <div className="site-footer__inner">
+          <section className="site-footer__brand" aria-label="IEEE Student Branch UoM">
+            <h2>IEEE Student Branch UoM</h2>
+            <p>
+              The Institute of Electrical and Electronics Engineers (IEEE)
+              Student Branch at University of Moratuwa is dedicated to fostering
+              innovation and technological excellence.
+            </p>
+            <div className="site-footer__socials">
+              {footerSocialLinks.map((link) => (
+                <a
+                  aria-label={link.label}
+                  href={link.href}
+                  key={link.label}
+                  rel="noreferrer"
+                  target="_blank"
+                >
+                  {link.shortLabel}
+                </a>
+              ))}
+            </div>
+          </section>
+
+          <nav className="site-footer__links" aria-label="Footer quick links">
+            <h3>Quick Links</h3>
+            <ul>
+              {footerQuickLinks.map((link) => (
+                <li key={link.label}>
+                  <a href={link.href}>{link.label}</a>
+                </li>
+              ))}
+            </ul>
+          </nav>
+
+          <section className="site-footer__events" aria-label="Upcoming events">
+            <h3>Upcoming Events</h3>
+            <div>
+              {footerEvents.map((event) => (
+                <article key={event.title}>
+                  <h4>{event.title}</h4>
+                  <p>{event.date}</p>
+                </article>
+              ))}
+            </div>
+          </section>
+        </div>
+
+        <div className="site-footer__bottom">
+          <p>© 2026 IEEE Student Branch, University of Moratuwa. All rights reserved.</p>
+          <div>
+            <a href="#home">Privacy Policy</a>
+            <a href="#home">Terms of Service</a>
+            <a href="#home">Sitemap</a>
+          </div>
+        </div>
+      </footer>
     </div>
   );
 }
