@@ -32,7 +32,7 @@ export default function SiteHeader() {
           alt="Rise Up Mora"
           width={830}
           height={535}
-          priority
+          loading="eager"
         />
       </a>
 

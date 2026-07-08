@@ -137,6 +137,7 @@ export default function Home() {
                 alt=""
                 width={830}
                 height={535}
+                loading="eager"
                 sizes="(max-width: 48rem) 72vw, 23rem"
               />
             </div>
