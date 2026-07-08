@@ -119,3 +119,31 @@ These are not public API routes, but they support the serverless functions:
 - `CLOUDINARY_API_KEY`: Cloudinary API key.
 - `CLOUDINARY_API_SECRET`: Cloudinary API secret.
 
+## Web Application Capabilities
+
+Rise Up Mora is an interview registration, company allocation, and feedback management platform. It supports multiple user types, each with a different workflow around candidate onboarding, company administration, interview scheduling, attendance tracking, and feedback collection.
+
+### User Types
+
+| User Type | Capabilities |
+| --- | --- |
+| **Candidate / Student** | Signs up, verifies email, signs in, completes candidate registration, uploads CV/profile image, submits academic and contact details, selects company preferences, views allocated companies/interview details, and views feedback received from companies. |
+| **Admin** | Manages the operational setup of the platform, including creating companies, adding company coordinators, adding department coordinators, adding panelists, viewing all candidates/interviewees, assigning candidates to companies/panelists, updating allocations, managing passwords, and deleting candidate allocations when needed. |
+| **Company Coordinator** | Reviews candidates allocated to their company, updates interview allocation details such as interview date, time slot, panel number, panelist, and allocation status. |
+| **Department Coordinator** | Accesses department-related coordination data and supports candidate/interview management for a specific department. |
+| **Panelist / Interviewer** | Views assigned interview allocations, checks candidate details, marks candidate attendance, and submits structured interview feedback with ratings and written comments. |
+
+### Overall Application Functionality
+
+- Provides a complete candidate registration flow from account creation to verified profile completion.
+- Stores candidate personal details, university details, CV URL, profile image URL, degree, department, and company preferences.
+- Maintains company records with company names, ids, and logos.
+- Allows admins to create and manage coordinator and panelist accounts with role-based user records.
+- Supports interview allocation workflows between candidates, companies, panelists, panel numbers, dates, and time slots.
+- Tracks allocation status and candidate attendance for interviews.
+- Enables panelists to submit candidate feedback using multiple scoring categories and written feedback.
+- Allows candidates and company/admin users to retrieve allocation and feedback data through serverless backend endpoints.
+- Provides aggregated allocation counts by company for reporting or dashboard views.
+- Uses Cloudinary for file uploads and external file URL storage.
+- Uses email delivery for verification and password reset workflows.
+- Uses Prisma/PostgreSQL as the source of truth for all users, candidates, companies, allocations, coordinators, panelists, and feedback.
