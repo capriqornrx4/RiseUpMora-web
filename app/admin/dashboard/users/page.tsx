@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Loader2, Plus, Mail, Building2, BookOpen, ChevronDown } from "lucide-react";
+import { Loader2, Plus, Mail, Building2, BookOpen, ChevronDown, Trash2 } from "lucide-react";
 
 type RoleType = "candidate" | "company_coordinator" | "department_coordinator" | "panelist";
 
@@ -90,6 +90,28 @@ export default function UserManagementPage() {
     }
   };
 
+  const handleDeleteUser = async (userId: string) => {
+    if (!confirm("Are you sure you want to delete this user? This action cannot be undone.")) {
+      return;
+    }
+
+    try {
+      const res = await fetch(`/api/v1/user?id=${userId}`, {
+        method: "DELETE",
+      });
+      const data = await res.json();
+      
+      if (data.success) {
+        fetchUsers(activeTab);
+      } else {
+        alert(data.error || "Failed to delete user");
+      }
+    } catch (error) {
+      console.error("Delete user error:", error);
+      alert("An error occurred while deleting the user.");
+    }
+  };
+
   return (
     <div className="flex flex-col gap-6">
       <div className="flex items-center justify-between">
@@ -151,18 +173,19 @@ export default function UserManagementPage() {
                 {activeTab === "panelist" && (
                   <th className="px-6 py-4 font-bold">Panel #</th>
                 )}
+                <th className="px-6 py-4 font-bold text-right">Actions</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-[#002454]/5">
               {loading ? (
                 <tr>
-                  <td colSpan={6} className="px-6 py-12 text-center text-[#002454]/50">
+                  <td colSpan={8} className="px-6 py-12 text-center text-[#002454]/50">
                     <Loader2 className="mx-auto animate-spin" size={24} />
                   </td>
                 </tr>
               ) : users.length === 0 ? (
                 <tr>
-                  <td colSpan={6} className="px-6 py-12 text-center text-[#002454]/50">
+                  <td colSpan={8} className="px-6 py-12 text-center text-[#002454]/50">
                     No users found for this role.
                   </td>
                 </tr>
@@ -187,6 +210,17 @@ export default function UserManagementPage() {
                     {activeTab === "panelist" && (
                       <td className="px-6 py-4 text-[#002454]/70">{user.panel_number}</td>
                     )}
+                    <td className="px-6 py-4 text-right">
+                      <div className="flex items-center justify-end gap-2">
+                        <button
+                          onClick={() => handleDeleteUser(user.user_id)}
+                          className="rounded-lg p-2 text-red-500 transition-colors hover:bg-red-50"
+                          title="Delete User"
+                        >
+                          <Trash2 size={18} />
+                        </button>
+                      </div>
+                    </td>
                   </tr>
                 ))
               )}

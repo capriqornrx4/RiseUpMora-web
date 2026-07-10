@@ -43,8 +43,11 @@ export async function POST(req: Request) {
     // Hash the new password
     const newPasswordHash = await bcrypt.hash(password, 10);
 
-    // Update the password in the database
-    await query("UPDATE users SET password_hash = $1 WHERE id = $2", [newPasswordHash, userId]);
+    // Update the password and mark email as verified (only if it hasn't been verified before)
+    await query(
+      "UPDATE users SET password_hash = $1, email_verified_at = COALESCE(email_verified_at, CURRENT_TIMESTAMP), updated_at = CURRENT_TIMESTAMP WHERE id = $2", 
+      [newPasswordHash, userId]
+    );
 
     return NextResponse.json({ success: true, message: "Account setup successfully!" });
 
