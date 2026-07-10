@@ -117,3 +117,32 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: error.message || "Failed to invite user" }, { status: 500 });
   }
 }
+
+export async function DELETE(req: Request) {
+  const session = await getServerSession(authOptions);
+  if (!session || (session.user as any).role !== "admin") {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 403 });
+  }
+
+  try {
+    const { searchParams } = new URL(req.url);
+    const id = searchParams.get("id");
+
+    if (!id) {
+      return NextResponse.json({ error: "User ID is required" }, { status: 400 });
+    }
+
+    // Delete user from users table. Because of ON DELETE CASCADE,
+    // this will also remove their entry from company_coordinators, department_coordinators, or panelists.
+    const res = await query("DELETE FROM users WHERE id = $1 RETURNING *", [id]);
+    
+    if (res.rowCount === 0) {
+      return NextResponse.json({ error: "User not found" }, { status: 404 });
+    }
+
+    return NextResponse.json({ success: true, message: "User deleted successfully" });
+  } catch (error) {
+    console.error("Delete user error:", error);
+    return NextResponse.json({ error: "Failed to delete user" }, { status: 500 });
+  }
+}
