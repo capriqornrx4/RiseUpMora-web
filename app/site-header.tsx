@@ -1,6 +1,8 @@
 "use client";
 
 import Image from "next/image";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 
 const navigation = [
@@ -14,6 +16,13 @@ const navigation = [
 
 export default function SiteHeader() {
   const [isScrolled, setIsScrolled] = useState(false);
+  const pathname = usePathname();
+  const isHomePage = pathname === "/";
+
+  const resolveHref = (href: string) => {
+    if (!href.startsWith("#")) return href;
+    return isHomePage ? href : `/${href}`;
+  };
 
   useEffect(() => {
     const updateHeader = () => setIsScrolled(window.scrollY > 48);
@@ -26,7 +35,7 @@ export default function SiteHeader() {
 
   return (
     <header className={`site-header${isScrolled ? " site-header--scrolled" : ""}`}>
-      <a className="site-brand" href="#home" aria-label="Rise Up Mora home">
+      <Link className="site-brand" href={isHomePage ? "#home" : "/"} aria-label="Rise Up Mora home">
         <Image
           src="/assets/rise-up-mora-logo.png"
           alt="Rise Up Mora"
@@ -34,21 +43,21 @@ export default function SiteHeader() {
           height={535}
           loading="eager"
         />
-      </a>
+      </Link>
 
       <nav className="site-navigation" aria-label="Main navigation">
         <ul>
           {navigation.map((item) => (
             <li key={item.label}>
-              <a href={item.href}>{item.label}</a>
+              <Link href={resolveHref(item.href)}>{item.label}</Link>
             </li>
           ))}
         </ul>
       </nav>
 
-      <a className="sign-in-link" href="#sign-in">
+      <Link className="sign-in-link" href={resolveHref("#sign-in")}>
         Sign In
-      </a>
+      </Link>
     </header>
   );
 }

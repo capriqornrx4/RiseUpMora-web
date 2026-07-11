@@ -1,4 +1,5 @@
 import Image from "next/image";
+import Link from "next/link";
 import chairPersonOne from "../assets/Chairs/3.png";
 import chairPersonTwo from "../assets/Chairs/4.png";
 import chairPersonThree from "../assets/Chairs/5.png";
@@ -118,9 +119,13 @@ export default function Home() {
               expert-led webinars and workshops.
             </p>
             <div className="hero-actions">
-              <a className="hero-primary" href="#sign-in">
+              <Link
+                className="hero-primary"
+                href="/signup"
+                prefetch
+              >
                 Sign Up
-              </a>
+              </Link>
               <a className="hero-secondary" href="#timeline">
                 View timeline
               </a>
