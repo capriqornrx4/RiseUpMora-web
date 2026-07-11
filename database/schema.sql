@@ -54,6 +54,7 @@ CREATE TABLE candidates (
     pref_2 VARCHAR(255),
     pref_3 VARCHAR(255),
     pref_4 VARCHAR(255),
+    application_comment TEXT,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
