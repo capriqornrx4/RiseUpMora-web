@@ -2,8 +2,11 @@
 
 import Image from "next/image";
 import Link from "next/link";
+import { ChevronDown, LogOut, UserRound } from "lucide-react";
+import { signOut, useSession } from "next-auth/react";
 import { usePathname } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
+import SignInModal from "./sign-in-modal";
 
 const navigation = [
   { label: "Home", href: "#home" },
@@ -16,6 +19,10 @@ const navigation = [
 
 export default function SiteHeader() {
   const [isScrolled, setIsScrolled] = useState(false);
+  const [isSignInOpen, setIsSignInOpen] = useState(false);
+  const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
+  const userMenuRef = useRef<HTMLDivElement>(null);
+  const { data: session, status } = useSession();
   const pathname = usePathname();
   const isHomePage = pathname === "/";
 
@@ -33,7 +40,29 @@ export default function SiteHeader() {
     return () => window.removeEventListener("scroll", updateHeader);
   }, []);
 
+  useEffect(() => {
+    if (!isUserMenuOpen) return;
+
+    const closeMenu = (event: MouseEvent) => {
+      if (!userMenuRef.current?.contains(event.target as Node)) {
+        setIsUserMenuOpen(false);
+      }
+    };
+    const closeMenuOnEscape = (event: KeyboardEvent) => {
+      if (event.key === "Escape") setIsUserMenuOpen(false);
+    };
+
+    document.addEventListener("mousedown", closeMenu);
+    window.addEventListener("keydown", closeMenuOnEscape);
+
+    return () => {
+      document.removeEventListener("mousedown", closeMenu);
+      window.removeEventListener("keydown", closeMenuOnEscape);
+    };
+  }, [isUserMenuOpen]);
+
   return (
+    <>
     <header className={`site-header${isScrolled ? " site-header--scrolled" : ""}`}>
       <Link className="site-brand" href={isHomePage ? "#home" : "/"} aria-label="Rise Up Mora home">
         <Image
@@ -55,9 +84,60 @@ export default function SiteHeader() {
         </ul>
       </nav>
 
-      <Link className="sign-in-link" href={resolveHref("#sign-in")}>
-        Sign In
-      </Link>
+      {status === "authenticated" ? (
+        <div className="site-user-menu" ref={userMenuRef}>
+          <button
+            className="site-user"
+            type="button"
+            title={session.user.email ?? undefined}
+            aria-expanded={isUserMenuOpen}
+            aria-haspopup="menu"
+            onClick={() => setIsUserMenuOpen((isOpen) => !isOpen)}
+          >
+            <UserRound size={17} aria-hidden="true" />
+            <span>{session.user.name || "Candidate"}</span>
+            <ChevronDown
+              className={isUserMenuOpen ? "site-user__chevron--open" : undefined}
+              size={15}
+              aria-hidden="true"
+            />
+          </button>
+
+          {isUserMenuOpen && (
+            <div className="site-user-menu__dropdown" role="menu">
+              <div className="site-user-menu__account" role="presentation">
+                <div aria-hidden="true">
+                  <UserRound size={18} />
+                </div>
+                <span>
+                  <strong>{session.user.name || "Candidate"}</strong>
+                  <small>{session.user.email}</small>
+                </span>
+              </div>
+              <div className="site-user-menu__divider" role="separator" />
+              <button
+                type="button"
+                role="menuitem"
+                onClick={() => signOut({ callbackUrl: "/" })}
+              >
+                <LogOut size={17} aria-hidden="true" />
+                Log out
+              </button>
+            </div>
+          )}
+        </div>
+      ) : (
+        <button
+          className="sign-in-link"
+          type="button"
+          onClick={() => setIsSignInOpen(true)}
+          disabled={status === "loading"}
+        >
+          Sign In
+        </button>
+      )}
     </header>
+    <SignInModal isOpen={isSignInOpen} onClose={() => setIsSignInOpen(false)} />
+    </>
   );
 }

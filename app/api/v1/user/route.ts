@@ -20,7 +20,7 @@ export async function GET(req: Request) {
     let sql = "";
     if (role === "candidate") {
       sql = `
-        SELECT u.id as user_id, u.name, u.email, c.student_id, c.faculty, c.department, c.degree, c.contact_number 
+        SELECT u.id as user_id, u.name, u.email, c.student_id, c.faculty, c.department, c.contact_number
         FROM users u 
         JOIN candidates c ON u.id = c.user_id 
         ORDER BY c.created_at DESC

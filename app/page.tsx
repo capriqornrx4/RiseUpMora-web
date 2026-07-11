@@ -1,5 +1,4 @@
 import Image from "next/image";
-import Link from "next/link";
 import chairPersonOne from "../assets/Chairs/3.png";
 import chairPersonTwo from "../assets/Chairs/4.png";
 import chairPersonThree from "../assets/Chairs/5.png";
@@ -9,6 +8,7 @@ import Preloader from "./preloader";
 import RotatingHeadline from "./rotating-headline";
 import SiteBackground from "./site-background";
 import SiteHeader from "./site-header";
+import HeroCandidateAction from "./hero-candidate-action";
 
 const partnershipTiers = [
   {
@@ -119,13 +119,7 @@ export default function Home() {
               expert-led webinars and workshops.
             </p>
             <div className="hero-actions">
-              <Link
-                className="hero-primary"
-                href="/signup"
-                prefetch
-              >
-                Sign Up
-              </Link>
+              <HeroCandidateAction />
               <a className="hero-secondary" href="#timeline">
                 View timeline
               </a>

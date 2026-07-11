@@ -1,48 +1,34 @@
 "use client";
 
 import Link from "next/link";
-import { ArrowLeft, BookOpen, CheckCircle2, GraduationCap, Mail, Phone, UserRound } from "lucide-react";
+import { getProviders, signIn } from "next-auth/react";
+import {
+  AlertCircle,
+  ArrowLeft,
+  BookOpen,
+  CheckCircle2,
+  GraduationCap,
+  Loader2,
+  Mail,
+  Phone,
+  UserRound,
+} from "lucide-react";
 import { useState } from "react";
+import {
+  departmentsByFaculty,
+  faculties,
+  type Faculty,
+} from "@/lib/candidate-options";
 import SiteBackground from "../site-background";
 import SiteHeader from "../site-header";
 
-const departmentsByFaculty = {
-  "Faculty of Engineering": [
-    "Department of Chemical & Process Engineering",
-    "Department of Civil Engineering",
-    "Department of Computer Science & Engineering",
-    "Department of Earth Resources Engineering",
-    "Department of Electrical Engineering",
-    "Department of Electronic & Telecommunication Engineering",
-    "Department of Materials Science & Engineering",
-    "Department of Mechanical Engineering",
-    "Department of Textile & Apparel Engineering",
-    "Department of Transport Management and Logistics Engineering",
-  ],
-  "Faculty of Information Technology": [
-    "Department of Information Technology",
-  ],
-  "Faculty of Business": [
-    "Department of Decision Sciences",
-    "Department of Industrial Management",
-    "Department of Management of Technology",
-  ],
-  "Faculty of Architecture": [
-    "Department of Architecture",
-    "Department of Building Economics",
-    "Department of Town & Country Planning",
-    "Department of Integrated Design",
-    "Department of Facilities Management",
-  ],
-
-} as const;
-
-const faculties = Object.keys(departmentsByFaculty) as Array<keyof typeof departmentsByFaculty>;
-
 export default function SignupPage() {
   const [submitted, setSubmitted] = useState(false);
-  const [selectedFaculty, setSelectedFaculty] = useState<keyof typeof departmentsByFaculty | "">("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [error, setError] = useState("");
+  const [selectedFaculty, setSelectedFaculty] = useState<Faculty | "">("");
   const [selectedDepartment, setSelectedDepartment] = useState("");
+  const [studentId, setStudentId] = useState("");
 
   const departmentOptions = selectedFaculty ? departmentsByFaculty[selectedFaculty] : [];
 
@@ -86,9 +72,41 @@ export default function SignupPage() {
 
           <form
             className="signup-form"
-            onSubmit={(event) => {
+            onSubmit={async (event) => {
               event.preventDefault();
-              setSubmitted(true);
+              const form = event.currentTarget;
+              setError("");
+              setSubmitted(false);
+              setIsSubmitting(true);
+
+              const formData = new FormData(form);
+
+              try {
+                const response = await fetch("/api/v1/candidate/signup", {
+                  method: "POST",
+                  headers: { "Content-Type": "application/json" },
+                  body: JSON.stringify(Object.fromEntries(formData)),
+                });
+                const data = (await response.json()) as {
+                  success?: boolean;
+                  error?: string;
+                };
+
+                if (!response.ok || !data.success) {
+                  setError(data.error || "Unable to complete registration");
+                  return;
+                }
+
+                setSubmitted(true);
+                form.reset();
+                setSelectedFaculty("");
+                setSelectedDepartment("");
+                setStudentId("");
+              } catch {
+                setError("Unable to connect. Please check your connection and try again.");
+              } finally {
+                setIsSubmitting(false);
+              }
             }}
           >
             <div className="signup-form__heading">
@@ -99,7 +117,14 @@ export default function SignupPage() {
             {submitted && (
               <div className="signup-success" role="status">
                 <CheckCircle2 size={18} aria-hidden="true" />
-                Your details are ready to be submitted once registration opens.
+                Check your email to verify your address and set your password.
+              </div>
+            )}
+
+            {error && (
+              <div className="signup-error" role="alert">
+                <AlertCircle size={18} aria-hidden="true" />
+                {error}
               </div>
             )}
 
@@ -123,7 +148,13 @@ export default function SignupPage() {
               <span>Contact number</span>
               <div className="signup-field">
                 <Phone size={18} aria-hidden="true" />
-                <input name="phone" type="tel" autoComplete="tel" required />
+                <input
+                  name="phone"
+                  type="tel"
+                  autoComplete="tel"
+                  maxLength={11}
+                  required
+                />
               </div>
             </label>
 
@@ -137,7 +168,7 @@ export default function SignupPage() {
                     required
                     value={selectedFaculty}
                     onChange={(event) => {
-                      setSelectedFaculty(event.target.value as keyof typeof departmentsByFaculty);
+                      setSelectedFaculty(event.target.value as Faculty);
                       setSelectedDepartment("");
                     }}
                   >
@@ -162,6 +193,13 @@ export default function SignupPage() {
                     maxLength={7}
                     pattern="[0-9]{6}[A-Za-z]"
                     title="Enter 6 digits followed by one English letter"
+                    value={studentId}
+                    onChange={(event) => {
+                      const value = event.target.value;
+                      setStudentId(
+                        value.replace(/[a-z]$/i, (letter) => letter.toUpperCase()),
+                      );
+                    }}
                     required
                   />
                 </div>
@@ -191,36 +229,51 @@ export default function SignupPage() {
               </div>
             </label>
 
-            <button className="signup-submit" type="submit">
-              Sign Up
+            <button className="signup-submit" type="submit" disabled={isSubmitting}>
+              {isSubmitting ? (
+                <>
+                  <Loader2 className="signup-spinner" size={18} aria-hidden="true" />
+                  Sending verification email
+                </>
+              ) : (
+                "Sign Up"
+              )}
             </button>
 
             <div className="signup-divider" aria-hidden="true">
               <span>or</span>
             </div>
 
-            <button className="signup-google" type="button">
+            <button
+              className="signup-google"
+              type="button"
+              disabled={isSubmitting}
+              onClick={async () => {
+                setError("");
+                setIsSubmitting(true);
+                try {
+                  const providers = await getProviders();
+                  if (!providers?.google) {
+                    setError("Google sign-in is not configured yet.");
+                    return;
+                  }
+                  await signIn("google", { callbackUrl: "/complete-profile" });
+                } catch {
+                  setError("Unable to start Google sign-in. Please try again.");
+                } finally {
+                  setIsSubmitting(false);
+                }
+              }}
+            >
               <svg
                 className="signup-google__mark"
                 aria-hidden="true"
                 viewBox="0 0 24 24"
               >
-                <path
-                  fill="#4285f4"
-                  d="M22.6 12.23c0-.78-.07-1.53-.2-2.23H12v4.26h5.94a5.08 5.08 0 0 1-2.2 3.33v2.77h3.56c2.08-1.92 3.3-4.74 3.3-8.13z"
-                />
-                <path
-                  fill="#34a853"
-                  d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.56-2.77c-.98.66-2.23 1.06-3.72 1.06-2.86 0-5.28-1.93-6.15-4.53H2.18v2.86A10.99 10.99 0 0 0 12 23z"
-                />
-                <path
-                  fill="#fbbc05"
-                  d="M5.85 14.1a6.61 6.61 0 0 1 0-4.2V7.04H2.18a11.01 11.01 0 0 0 0 9.92l3.67-2.86z"
-                />
-                <path
-                  fill="#ea4335"
-                  d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1a10.99 10.99 0 0 0-9.82 6.04L5.85 9.9C6.72 7.31 9.14 5.38 12 5.38z"
-                />
+                <path fill="#4285f4" d="M22.6 12.23c0-.78-.07-1.53-.2-2.23H12v4.26h5.94a5.08 5.08 0 0 1-2.2 3.33v2.77h3.56c2.08-1.92 3.3-4.74 3.3-8.13z" />
+                <path fill="#34a853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.56-2.77c-.98.66-2.23 1.06-3.72 1.06-2.86 0-5.28-1.93-6.15-4.53H2.18v2.86A10.99 10.99 0 0 0 12 23z" />
+                <path fill="#fbbc05" d="M5.85 14.1a6.61 6.61 0 0 1 0-4.2V7.04H2.18a11.01 11.01 0 0 0 0 9.92l3.67-2.86z" />
+                <path fill="#ea4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1a10.99 10.99 0 0 0-9.82 6.04L5.85 9.9C6.72 7.31 9.14 5.38 12 5.38z" />
               </svg>
               Sign in with Google
             </button>

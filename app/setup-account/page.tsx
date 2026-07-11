@@ -53,12 +53,12 @@ export default function SetupAccountPage() {
       if (data.success) {
         setSuccess(true);
         setTimeout(() => {
-          router.push("/login");
+          router.push(data.role === "candidate" ? "/" : "/admin/login");
         }, 3000);
       } else {
         setError(data.error || "Failed to setup account");
       }
-    } catch (err) {
+    } catch {
       setError("An unexpected error occurred");
     } finally {
       setLoading(false);
@@ -72,8 +72,8 @@ export default function SetupAccountPage() {
           <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-green-100 text-green-600">
             <CheckCircle2 size={32} />
           </div>
-          <h2 className="mt-6 text-2xl font-extrabold text-[#002454]">Account Setup Complete!</h2>
-          <p className="mt-2 text-[#002454]/70">Redirecting you to the login page...</p>
+          <h2 className="mt-6 text-2xl font-extrabold text-[#002454]">Email Verified!</h2>
+          <p className="mt-2 text-[#002454]/70">Your account is ready. Redirecting you now...</p>
         </div>
       </div>
     );
