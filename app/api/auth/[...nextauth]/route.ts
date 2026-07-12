@@ -30,8 +30,8 @@ export const authOptions: NextAuthOptions = {
             return null;
           }
 
-          if ( !["admin", "company_coordinator"].includes(user.role)) {
-            return null; // Only allow admins and company coordinators to login via this portal
+          if ( !["admin"].includes(user.role)) {
+            return null; // Only allow admins to login via this portal
           }
 
           return {
