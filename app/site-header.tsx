@@ -3,6 +3,7 @@
 import Image from "next/image";
 import { Menu, X } from "lucide-react";
 import { useEffect, useState } from "react";
+import RegistrationComingSoonButton from "./registration-coming-soon-button";
 
 const navigation = [
   { label: "Home", href: "#home" },
@@ -67,9 +68,9 @@ export default function SiteHeader() {
       </nav>
 
       <div className="site-header-actions">
-        <a className="sign-in-link" href="#sign-in" onClick={() => setIsMenuOpen(false)}>
+        <RegistrationComingSoonButton className="sign-in-link" onClick={() => setIsMenuOpen(false)}>
           Sign In
-        </a>
+        </RegistrationComingSoonButton>
         <button
           className="mobile-menu-toggle"
           type="button"

@@ -197,8 +197,10 @@ html {
   padding: 0.7rem 1.35rem;
   background: #002454;
   color: #ffffff;
+  cursor: pointer;
   font-size: 0.88rem;
   font-weight: 700;
+  font-family: inherit;
   text-decoration: none;
   transition:
     background 180ms ease,
@@ -323,9 +325,13 @@ html {
   gap: 0.9rem;
 }
 
-.hero-actions a {
+.hero-actions a,
+.hero-actions button {
+  border: 0;
   border-radius: 999px;
   padding: 0.9rem 1.45rem;
+  cursor: pointer;
+  font-family: inherit;
   font-size: 0.9rem;
   font-weight: 750;
   text-decoration: none;
@@ -335,7 +341,9 @@ html {
 }
 
 .hero-actions a:hover,
-.hero-actions a:focus-visible {
+.hero-actions a:focus-visible,
+.hero-actions button:hover,
+.hero-actions button:focus-visible {
   transform: translateY(-2px);
 }
 
@@ -349,6 +357,25 @@ html {
   border: 1px solid rgb(0 36 84 / 18%);
   background: rgb(255 255 255 / 60%);
   color: #002454;
+}
+
+.registration-coming-soon {
+  position: fixed;
+  z-index: 120;
+  right: clamp(1rem, 3vw, 2rem);
+  bottom: clamp(1rem, 3vw, 2rem);
+  max-width: min(22rem, calc(100vw - 2rem));
+  border: 1px solid rgb(0 36 84 / 12%);
+  border-radius: 0.75rem;
+  padding: 0.95rem 1.1rem;
+  background: rgb(255 255 255 / 94%);
+  box-shadow: 0 1rem 2.75rem rgb(0 36 84 / 18%);
+  color: #002454;
+  font-size: 0.95rem;
+  font-weight: 800;
+  line-height: 1.35;
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
 }
 
 .hero-visual {

@@ -18,6 +18,7 @@ import ieeeSbWhiteLogo from "../assets/UOM IEEE SB LOGO - WHITE.png";
 import AboutStory from "./about-story";
 import EventTimeline from "./event-timeline";
 import Preloader from "./preloader";
+import RegistrationComingSoonButton from "./registration-coming-soon-button";
 import RotatingHeadline from "./rotating-headline";
 import SiteBackground from "./site-background";
 import SiteHeader from "./site-header";
@@ -95,10 +96,9 @@ const chairPersons = [
 ] as const;
 
 const footerSocialLinks = [
-  { label: "Facebook", shortLabel: "Fb", href: "https://www.facebook.com/IEEEUOM" },
-  { label: "LinkedIn", shortLabel: "In", href: "https://www.linkedin.com/company/ieeeuom" },
-  { label: "Instagram", shortLabel: "Ig", href: "https://www.instagram.com/ieeeuom" },
-  { label: "IEEE UoM", shortLabel: "Web", href: "https://ieee.uom.lk/" },
+  { label: "Facebook", shortLabel: "Fb", href: "https://www.facebook.com/ieeesbuom" },
+  { label: "LinkedIn", shortLabel: "In", href: "https://www.linkedin.com/company/ieeesbuom/" },
+  { label: "IEEE SB UoM", shortLabel: "Web", href: "https://ieeesb.uom.lk/" },
 ] as const;
 
 const footerQuickLinks = [
@@ -144,9 +144,9 @@ export default function Home() {
               expert-led webinars and workshops.
             </p>
             <div className="hero-actions">
-              <a className="hero-primary" href="/company/login">
+              <RegistrationComingSoonButton className="hero-primary">
                 Sign Up
-              </a>
+              </RegistrationComingSoonButton>
               <a className="hero-secondary" href="#timeline">
                 View timeline
               </a>
