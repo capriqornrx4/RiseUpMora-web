@@ -46,7 +46,7 @@ export default function SiteHeader() {
         </ul>
       </nav>
 
-      <a className="sign-in-link" href="#sign-in">
+      <a className="sign-in-link" href="/company/login">
         Sign In
       </a>
     </header>
