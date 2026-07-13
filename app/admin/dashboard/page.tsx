@@ -1,8 +1,16 @@
+import { getServerSession } from "next-auth";
+import { authOptions } from "@/app/api/auth/[...nextauth]/route";
+import { redirect } from "next/navigation";
 import { query } from "@/lib/db";
 
 export const dynamic = "force-dynamic";
 
 export default async function AdminDashboardOverview() {
+  const session = await getServerSession(authOptions);
+
+  if (!session || (session.user as any).role !== "admin") {
+    redirect("/admin/login");
+  }
   let totalCompanies = "--";
   let totalCandidates = "--";
   let interviewsScheduled = "--";
