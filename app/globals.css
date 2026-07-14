@@ -120,7 +120,7 @@ html {
 }
 
 .site-header--scrolled .site-brand {
-  width: 7.6rem;
+  width: 6.4rem;
   border-color: rgb(0 36 84 / 10%);
   padding: 0.35rem 0.7rem;
   background: rgb(255 255 255 / 84%);
@@ -441,7 +441,7 @@ html {
   position: relative;
   z-index: 2;
   display: grid;
-  width: 94%;
+  width: 100%;
   place-items: center;
 }
 
@@ -1159,8 +1159,9 @@ html {
 
 .partner-tier-grid {
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-template-columns: repeat(6, minmax(0, 1fr));
   gap: 1rem;
+  max-width: 100%;
 }
 
 .partner-tier-card {
@@ -1179,22 +1180,40 @@ html {
 }
 
 .partner-tier-card:nth-child(1) {
+  grid-column: 1/3;
   background:
     radial-gradient(circle at 92% 6%, rgb(246 196 48 / 28%), transparent 12rem),
     linear-gradient(180deg, #ffffff, #f9fbfd);
 }
 
 .partner-tier-card:nth-child(2) {
+  grid-column: 3/5;
   background:
     radial-gradient(circle at 92% 6%, rgb(51 174 218 / 25%), transparent 12rem),
     linear-gradient(180deg, #ffffff, #f2fafd);
 }
 
 .partner-tier-card:nth-child(3) {
+  grid-column: 5/7;
   background:
     radial-gradient(circle at 92% 6%, rgb(0 36 84 / 13%), transparent 12rem),
     linear-gradient(180deg, #ffffff, #f6f8fb);
 }
+
+.partner-tier-card:nth-child(4) {
+  grid-column: 2/4;
+  background:
+    radial-gradient(circle at 92% 6%, rgb(230 115 0 / 24%), transparent 12rem),
+    linear-gradient(180deg, #ffffff, #fef6f0);
+}
+
+.partner-tier-card:nth-child(5) {
+  grid-column: 4 / 6;
+  background:
+    radial-gradient(circle at 92% 6%, rgb(147 51 234 / 22%), transparent 12rem),
+    linear-gradient(180deg, #ffffff, #faf6fd);
+}
+
 
 .partner-tier-card::after {
   position: absolute;

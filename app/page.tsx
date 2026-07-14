@@ -57,6 +57,28 @@ const partnershipTiers = [
       "Digital promotion support",
     ],
   },
+  {
+  name: "Bronze Partner",
+  label: "Brand Visibility",
+  description:
+    "Increase your brand presence by engaging with aspiring professionals through event-wide recognition and promotional opportunities.",
+  benefits: [
+    "Logo on event promotional materials",
+    "Recognition on social media platforms",
+    "Brand visibility during the event",
+  ],
+},
+{
+  name: "Stall Partner",
+  label: "Direct Engagement",
+  description:
+    "Connect directly with students through an on-site exhibition stall, showcasing your brand, products, services, and career opportunities.",
+  benefits: [
+    "Dedicated exhibition stall",
+    "Direct interaction with attendees",
+    "Opportunity to distribute promotional materials",
+  ],
+}
 ] as const;
 
 const galleryCards = [
@@ -89,7 +111,7 @@ const chairPersons = [
     image: chairPersonTwo,
   },
   {
-    name: "Thamalu Bambaravange",
+    name: "Thamalu Bambaravanage",
     role: "Event Vice Chairperson",
     image: chairPersonThree,
   },
