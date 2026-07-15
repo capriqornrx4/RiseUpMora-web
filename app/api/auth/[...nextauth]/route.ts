@@ -36,11 +36,9 @@ const providers: NextAuthOptions["providers"] = [
 
         if (!user?.password_hash) return null;
 
-        const passwordIsValid = await bcrypt.compare(
-          credentials.password,
-          user.password_hash,
-        );
-        if (!passwordIsValid) return null;
+          if ( !["admin"].includes(user.role)) {
+            return null; // Only allow admins to login via this portal
+          }
 
         const isCandidateLogin = credentials.portal === "candidate";
         if (isCandidateLogin) {

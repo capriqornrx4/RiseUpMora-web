@@ -7,6 +7,8 @@ import { signOut, useSession } from "next-auth/react";
 import { usePathname } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import SignInModal from "./sign-in-modal";
+import { Menu, X } from "lucide-react";
+import { useEffect, useState } from "react";
 
 const navigation = [
   { label: "Home", href: "#home" },
@@ -65,6 +67,24 @@ export default function SiteHeader() {
     <>
     <header className={`site-header${isScrolled ? " site-header--scrolled" : ""}`}>
       <Link className="site-brand" href={isHomePage ? "#home" : "/"} aria-label="Rise Up Mora home">
+    const closeDesktopMenu = () => {
+      if (window.innerWidth > 768) {
+        setIsMenuOpen(false);
+      }
+    };
+
+    window.addEventListener("resize", closeDesktopMenu);
+
+    return () => window.removeEventListener("resize", closeDesktopMenu);
+  }, []);
+
+  return (
+    <header
+      className={`site-header${isScrolled ? " site-header--scrolled" : ""}${
+        isMenuOpen ? " site-header--menu-open" : ""
+      }`}
+    >
+      <a className="site-brand" href="#home" aria-label="Rise Up Mora home">
         <Image
           src="/assets/rise-up-mora-logo.png"
           alt="Rise Up Mora"
@@ -74,7 +94,7 @@ export default function SiteHeader() {
         />
       </Link>
 
-      <nav className="site-navigation" aria-label="Main navigation">
+      <nav id="site-navigation" className="site-navigation" aria-label="Main navigation">
         <ul>
           {navigation.map((item) => (
             <li key={item.label}>
@@ -136,6 +156,22 @@ export default function SiteHeader() {
           Sign In
         </button>
       )}
+      <div className="site-header-actions">
+        <a className="sign-in-link" href="#sign-in" onClick={() => setIsMenuOpen(false)}>
+          Sign In
+        </a>
+        <button
+          className="mobile-menu-toggle"
+          type="button"
+          aria-label={isMenuOpen ? "Close navigation menu" : "Open navigation menu"}
+          aria-expanded={isMenuOpen}
+          aria-controls="site-navigation"
+          title={isMenuOpen ? "Close menu" : "Open menu"}
+          onClick={() => setIsMenuOpen((current) => !current)}
+        >
+          {isMenuOpen ? <X aria-hidden="true" /> : <Menu aria-hidden="true" />}
+        </button>
+      </div>
     </header>
     <SignInModal isOpen={isSignInOpen} onClose={() => setIsSignInOpen(false)} />
     </>

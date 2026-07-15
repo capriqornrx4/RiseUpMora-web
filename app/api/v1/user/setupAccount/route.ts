@@ -77,12 +77,14 @@ export async function POST(request: Request) {
       );
     }
 
-    if (user.role === "candidate" && purpose !== "candidate_email_verification") {
-      return NextResponse.json(
-        { error: "This verification link is not valid for a candidate account" },
-        { status: 400 },
-      );
-    }
+    // Hash the new password
+    const newPasswordHash = await bcrypt.hash(password, 10);
+
+    // Update the password and mark email as verified (only if it hasn't been verified before)
+    await query(
+      "UPDATE users SET password_hash = $1, email_verified_at = COALESCE(email_verified_at, CURRENT_TIMESTAMP), updated_at = CURRENT_TIMESTAMP WHERE id = $2", 
+      [newPasswordHash, userId]
+    );
 
     const newPasswordHash = await bcrypt.hash(password, 10);
     await query(
