@@ -72,7 +72,11 @@ export const sendCandidateVerificationEmail = async (
   token: string,
   name: string,
 ) => {
-  const setupUrl = `${process.env.NEXTAUTH_URL || "http://localhost:3000"}/setup-account?token=${encodeURIComponent(token)}`;
+  const baseUrl = process.env.NEXTAUTH_URL;
+  if (!baseUrl) {
+    throw new Error("NEXTAUTH_URL is required to send candidate verification emails");
+  }
+  const setupUrl = `${baseUrl}/setup-account?token=${encodeURIComponent(token)}`;
   const safeName = name
     .replaceAll("&", "&amp;")
     .replaceAll("<", "&lt;")
