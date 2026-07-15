@@ -21,6 +21,7 @@ import Preloader from "./preloader";
 import RotatingHeadline from "./rotating-headline";
 import SiteBackground from "./site-background";
 import SiteHeader from "./site-header";
+import HeroCandidateAction from "./hero-candidate-action";
 
 const partnershipTiers = [
   {
@@ -144,9 +145,7 @@ export default function Home() {
               expert-led webinars and workshops.
             </p>
             <div className="hero-actions">
-              <a className="hero-primary" href="/company/login">
-                Sign Up
-              </a>
+              <HeroCandidateAction />
               <a className="hero-secondary" href="#timeline">
                 View timeline
               </a>
