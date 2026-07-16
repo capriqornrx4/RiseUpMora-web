@@ -153,6 +153,21 @@ export default function SiteHeader() {
                     </>
                   )}
 
+                  {session.user.role === "panelist" && (
+                    <>
+                      <Link
+                        href="/panelist/dashboard"
+                        className="site-user-menu__dashboard-link"
+                        role="menuitem"
+                        onClick={() => setIsUserMenuOpen(false)}
+                      >
+                        <LayoutDashboard size={17} aria-hidden="true" />
+                        Dashboard
+                      </Link>
+                      <div className="site-user-menu__divider" role="separator" />
+                    </>
+                  )}
+
                   <button
                     type="button"
                     role="menuitem"

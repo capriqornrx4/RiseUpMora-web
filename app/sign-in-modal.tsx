@@ -80,6 +80,12 @@ export default function SignInModal({ isOpen, onClose }: SignInModalProps) {
         router.refresh();
         return;
       }
+      if (session?.user?.role === "panelist") {
+        closeModal();
+        router.push("/panelist/dashboard");
+        router.refresh();
+        return;
+      }
 
       setIsSuccessful(true);
       setPassword("");

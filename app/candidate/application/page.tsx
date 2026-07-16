@@ -66,6 +66,7 @@ export default function CandidateApplicationPage() {
   const [submissionStage, setSubmissionStage] = useState("");
   const [error, setError] = useState("");
   const [success, setSuccess] = useState(false);
+  const [interviews, setInterviews] = useState<any[]>([]);
 
   useEffect(() => {
     if (status === "loading") return;
@@ -84,17 +85,19 @@ export default function CandidateApplicationPage() {
         const data = (await response.json()) as {
           candidate?: CandidateApplication;
           companies?: Company[];
+          interviews?: any[];
           error?: string;
         };
         if (!response.ok || !data.candidate || !data.companies) {
           throw new Error(data.error || "Unable to load your application");
         }
-        return data as { candidate: CandidateApplication; companies: Company[] };
+        return data as { candidate: CandidateApplication; companies: Company[]; interviews: any[] };
       })
       .then((data) => {
         if (!data) return;
         setCandidate(data.candidate);
         setCompanies(data.companies);
+        setInterviews(data.interviews || []);
         setPreferences(
           Array.from({ length: 4 }, (_, index) =>
             data.candidate.preferences[index] ?? "",
@@ -287,7 +290,65 @@ export default function CandidateApplicationPage() {
             Loading your application
           </div>
         ) : candidate ? (
-          <form className="candidate-application-form" onSubmit={handleSubmit}>
+          <>
+            {/* Interviews & Feedback Portal */}
+            {interviews.length > 0 && (
+              <div className="candidate-interviews-section">
+                <h2 className="candidate-interviews-title">My Interviews & Feedback</h2>
+                <div className="candidate-interviews-list">
+                  {interviews.map((item) => (
+                    <div key={item.allocation_id} className="candidate-interview-card">
+                      <div className="candidate-interview-header">
+                        <div className="candidate-interview-company">
+                          {item.logo_url && (
+                            <img src={item.logo_url} alt={item.company_name} className="candidate-interview-logo" />
+                          )}
+                          <h3>{item.company_name}</h3>
+                        </div>
+                        <span className={`candidate-interview-status status-${item.status.toLowerCase()}`}>
+                          {item.status === "0" ? "Pending" : item.status === "1" ? "Scheduled" : item.status === "ONGOING" ? "Ongoing" : "Completed"}
+                        </span>
+                      </div>
+                      
+                      {item.status === "ONGOING" && (
+                        <div className="candidate-interview-ongoing-notice">
+                          <span>🔔</span> Your mock interview session is currently active. Please report to your assigned panel list.
+                        </div>
+                      )}
+
+                      {item.status === "COMPLETED" && (
+                        <div className="candidate-interview-feedback">
+                          <h4>Mock Interview Evaluation</h4>
+                          <div className="candidate-feedback-ratings">
+                            <div className="candidate-rating-item">
+                              <span className="rating-label">Technical Skills</span>
+                              <span className="rating-value">{item.technical_skills || "N/A"}/10</span>
+                            </div>
+                            <div className="candidate-rating-item">
+                              <span className="rating-label">Communication</span>
+                              <span className="rating-value">{item.communication || "N/A"}/10</span>
+                            </div>
+                            <div className="candidate-rating-item">
+                              <span className="rating-label">Industry Ready</span>
+                              <span className="rating-value">{item.industry_ready || "N/A"}/10</span>
+                            </div>
+                          </div>
+                          
+                          {item.written_feedback && (
+                            <div className="candidate-feedback-notes">
+                              <h5>Panelist Advice & Notes</h5>
+                              <blockquote>"{item.written_feedback}"</blockquote>
+                            </div>
+                          )}
+                        </div>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            <form className="candidate-application-form" onSubmit={handleSubmit}>
             <section className="application-section" aria-labelledby="applicant-details-title">
               <div className="application-section__heading">
                 <span>01</span>
@@ -437,7 +498,8 @@ export default function CandidateApplicationPage() {
               ) : null}
               {isSubmitting ? submissionStage : "Submit application"}
             </button>
-          </form>
+            </form>
+          </>
         ) : (
           <div className="signup-error" role="alert">{error}</div>
         )}

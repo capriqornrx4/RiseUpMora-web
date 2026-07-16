@@ -29,7 +29,7 @@ export async function GET() {
   }
 
   try {
-    const [candidateResult, companyResult] = await Promise.all([
+    const [candidateResult, companyResult, interviewResult] = await Promise.all([
       query(
         `SELECT u.name, u.email, c.contact_number, c.student_id,
                 c.faculty, c.department, c.cv_url,
@@ -41,6 +41,16 @@ export async function GET() {
         [session.user.id],
       ),
       query("SELECT id, name FROM companies ORDER BY name ASC"),
+      query(
+        `SELECT a.id as allocation_id, comp.name as company_name, comp.logo_url, a.status,
+                f.technical_skills, f.communication, f.industry_ready, f.written_feedback
+         FROM allocations a
+         JOIN companies comp ON a.company_id = comp.id
+         JOIN candidates c ON a.candidate_id = c.id
+         LEFT JOIN feedback f ON f.candidate_id = c.id AND f.company_id = comp.id
+         WHERE c.user_id = $1`,
+        [session.user.id]
+      ),
     ]);
 
     if (candidateResult.rowCount === 0) {
@@ -83,6 +93,7 @@ export async function GET() {
         comment: candidate.application_comment ?? "",
       },
       companies: companyResult.rows,
+      interviews: interviewResult.rows,
     });
   } catch (error: unknown) {
     console.error("Candidate application fetch error:", error);

@@ -3812,3 +3812,211 @@ html {
     transform: scaleX(1);
   }
 }
+
+/* Candidate Interviews & Feedback Portal */
+.candidate-interviews-section {
+  background: #ffffff;
+  border: 1px solid rgb(0 36 84 / 10%);
+  border-radius: 1.5rem;
+  padding: 1.75rem;
+  margin-bottom: 2.5rem;
+  box-shadow: 0 0.5rem 2rem rgb(0 36 84 / 3%);
+}
+
+.candidate-interviews-title {
+  color: #002454;
+  font-size: 1.25rem;
+  font-weight: 800;
+  border-bottom: 1px solid rgb(0 36 84 / 6%);
+  padding-bottom: 0.75rem;
+  margin-bottom: 1.5rem;
+}
+
+.candidate-interviews-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.candidate-interview-card {
+  border: 1px solid rgb(0 36 84 / 6%);
+  border-radius: 1.25rem;
+  padding: 1.5rem;
+  background: #f8fcfe;
+  transition: transform 180ms ease, box-shadow 180ms ease;
+}
+
+.candidate-interview-card:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 0.4rem 1.2rem rgb(0 36 84 / 4%);
+}
+
+.candidate-interview-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 1rem;
+  border-bottom: 1px dashed rgb(0 36 84 / 8%);
+  padding-bottom: 1rem;
+  margin-bottom: 1.25rem;
+}
+
+.candidate-interview-company {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.candidate-interview-logo {
+  height: 2rem;
+  max-width: 4rem;
+  object-fit: contain;
+  background: #ffffff;
+  border-radius: 0.5rem;
+  padding: 0.25rem;
+  border: 1px solid rgb(0 36 84 / 5%);
+}
+
+.candidate-interview-company h3 {
+  font-size: 1.05rem;
+  font-weight: 800;
+  color: #002454;
+  margin: 0;
+}
+
+.candidate-interview-status {
+  display: inline-flex;
+  align-items: center;
+  border-radius: 9999px;
+  padding: 0.25rem 0.75rem;
+  font-size: 0.72rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  border: 1px solid;
+}
+
+.candidate-interview-status.status-0 {
+  background: #f1f5f9;
+  color: #475569;
+  border-color: #e2e8f0;
+}
+
+.candidate-interview-status.status-1 {
+  background: #f0f9ff;
+  color: #0369a1;
+  border-color: #bae6fd;
+}
+
+.candidate-interview-status.status-ongoing {
+  background: #fffbeb;
+  color: #b45309;
+  border-color: #fde68a;
+  animation: pulse-border 1.5s infinite;
+}
+
+.candidate-interview-status.status-completed {
+  background: #f0fdf4;
+  color: #15803d;
+  border-color: #bbf7d0;
+}
+
+.candidate-interview-ongoing-notice {
+  background: #fffbeb;
+  border: 1px solid #fde68a;
+  border-radius: 0.75rem;
+  padding: 0.75rem 1rem;
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: #b45309;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.candidate-interview-feedback {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.candidate-interview-feedback h4 {
+  font-size: 0.82rem;
+  font-weight: 800;
+  color: #002454;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin: 0;
+}
+
+.candidate-feedback-ratings {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1rem;
+}
+
+@media (min-width: 640px) {
+  .candidate-feedback-ratings {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+.candidate-rating-item {
+  background: #ffffff;
+  border: 1px solid rgb(0 36 84 / 6%);
+  border-radius: 0.75rem;
+  padding: 0.75rem 1rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.rating-label {
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: rgb(0 36 84 / 60%);
+}
+
+.rating-value {
+  font-size: 0.85rem;
+  font-weight: 800;
+  color: #15803d;
+}
+
+.candidate-feedback-notes {
+  border-top: 1px solid rgb(0 36 84 / 5%);
+  padding-top: 1rem;
+}
+
+.candidate-feedback-notes h5 {
+  font-size: 0.76rem;
+  font-weight: 800;
+  color: rgb(0 36 84 / 50%);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin: 0 0 0.5rem;
+}
+
+.candidate-feedback-notes blockquote {
+  font-size: 0.82rem;
+  font-weight: 600;
+  line-height: 1.5;
+  color: #002454;
+  background: #ffffff;
+  border-left: 3.5px solid #33aeda;
+  border-radius: 0 0.5rem 0.5rem 0;
+  padding: 0.75rem 1rem;
+  margin: 0;
+  font-style: italic;
+}
+
+@keyframes pulse-border {
+  0%, 100% {
+    border-color: #fde68a;
+  }
+  50% {
+    border-color: #f59e0b;
+  }
+}
+

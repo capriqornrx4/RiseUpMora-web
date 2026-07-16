@@ -40,9 +40,16 @@ export async function proxy(req: NextRequest) {
     }
   }
 
+  // Protect /panelist routes
+  if (pathname.startsWith("/panelist")) {
+    if (!token || token.role !== "panelist") {
+      return NextResponse.redirect(new URL("/", req.url));
+    }
+  }
+
   return NextResponse.next();
 }
 
 export const config = {
-  matcher: ["/admin/:path*", "/company/:path*"],
+  matcher: ["/admin/:path*", "/company/:path*", "/panelist/:path*"],
 };

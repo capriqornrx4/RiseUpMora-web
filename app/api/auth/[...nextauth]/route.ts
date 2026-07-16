@@ -45,7 +45,9 @@ const providers: NextAuthOptions["providers"] = [
         const isCandidateLogin = credentials.portal === "candidate";
         if (isCandidateLogin) {
           if (
-            (user.role !== "candidate" && user.role !== "company_coordinator") ||
+            (user.role !== "candidate" &&
+              user.role !== "company_coordinator" &&
+              user.role !== "panelist") ||
             !user.email_verified_at
           ) {
             return null;
