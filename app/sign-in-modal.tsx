@@ -9,7 +9,7 @@ import {
   Mail,
   X,
 } from "lucide-react";
-import { getProviders, signIn } from "next-auth/react";
+import { getProviders, getSession, signIn } from "next-auth/react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
@@ -70,6 +70,14 @@ export default function SignInModal({ isOpen, onClose }: SignInModalProps) {
 
       if (!result?.ok || result.error) {
         setError("Invalid credentials or your email has not been verified.");
+        return;
+      }
+
+      const session = await getSession();
+      if (session?.user?.role === "company_coordinator") {
+        closeModal();
+        router.push("/company/dashboard");
+        router.refresh();
         return;
       }
 

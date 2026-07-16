@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { ChevronDown, LogOut, Menu, UserRound, X } from "lucide-react";
+import { ChevronDown, LayoutDashboard, LogOut, Menu, UserRound, X } from "lucide-react";
 import { signOut, useSession } from "next-auth/react";
 import { usePathname } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
@@ -137,6 +137,22 @@ export default function SiteHeader() {
                     </span>
                   </div>
                   <div className="site-user-menu__divider" role="separator" />
+                  
+                  {session.user.role === "company_coordinator" && (
+                    <>
+                      <Link
+                        href="/company/dashboard"
+                        className="site-user-menu__dashboard-link"
+                        role="menuitem"
+                        onClick={() => setIsUserMenuOpen(false)}
+                      >
+                        <LayoutDashboard size={17} aria-hidden="true" />
+                        Dashboard
+                      </Link>
+                      <div className="site-user-menu__divider" role="separator" />
+                    </>
+                  )}
+
                   <button
                     type="button"
                     role="menuitem"
