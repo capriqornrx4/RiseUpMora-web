@@ -596,6 +596,8 @@ html {
 .site-user-menu__dropdown button:hover,
 .site-user-menu__dropdown button:focus-visible {
   background: rgb(190 24 93 / 10%);
+}
+
 .mobile-menu-toggle {
   display: none;
   width: 2.7rem;

@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Loader2, Plus, Mail, Building2, BookOpen, ChevronDown, Trash2 } from "lucide-react";
+import { Loader2, Plus, Mail, Building2, BookOpen, ChevronDown, Trash2, Search, X, SlidersHorizontal } from "lucide-react";
 
 type RoleType = "candidate" | "company_coordinator" | "department_coordinator" | "panelist";
 
@@ -10,7 +10,12 @@ export default function UserManagementPage() {
   const [users, setUsers] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
   const [companies, setCompanies] = useState<any[]>([]);
-  
+
+  // Candidate search & filter
+  const [candidateSearch, setCandidateSearch] = useState("");
+  const [filterFaculty, setFilterFaculty] = useState("");
+  const [filterDept, setFilterDept] = useState("");
+
   // Modal State
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isDeptDropdownOpen, setIsDeptDropdownOpen] = useState(false);
@@ -30,13 +35,53 @@ export default function UserManagementPage() {
   ];
 
   const departments = [
-    { group: "Faculty of Engineering (FOE)", options: ["FOE – Chemical and Process Engineering", "FOE – Civil Engineering", "FOE – Computer Science and Engineering", "FOE – Earth Resources Engineering", "FOE – Electrical Engineering", "FOE – Electronic and Telecommunication Engineering", "FOE – Materials Science and Engineering", "FOE – Mechanical Engineering", "FOE – Textile and Apparel Engineering", "FOE – Transport Management and Logistics Engineering"] },
-    { group: "Faculty of Information Technology (FOIT)", options: ["FOIT – Information Technology", "FOIT – Computational Mathematics", "FOIT – Interdisciplinary Studies"] },
-    { group: "Faculty of Business (FOB)", options: ["FOB – Decision Sciences", "FOB – Industrial Management", "FOB – Management of Technology"] },
+    {
+      group: "Faculty of Engineering",
+      options: [
+        "Department of Chemical & Process Engineering",
+        "Department of Civil Engineering",
+        "Department of Computer Science & Engineering",
+        "Department of Earth Resources Engineering",
+        "Department of Electrical Engineering",
+        "Department of Electronic & Telecommunication Engineering",
+        "Department of Materials Science & Engineering",
+        "Department of Mechanical Engineering",
+        "Department of Textile & Apparel Engineering",
+        "Department of Transport Management and Logistics Engineering",
+      ],
+    },
+    {
+      group: "Faculty of Information Technology",
+      options: [
+        "Department of Information Technology",
+      ],
+    },
+    {
+      group: "Faculty of Business",
+      options: [
+        "Department of Decision Sciences",
+        "Department of Industrial Management",
+        "Department of Management of Technology",
+      ],
+    },
+    {
+      group: "Faculty of Architecture",
+      options: [
+        "Department of Architecture",
+        "Department of Building Economics",
+        "Department of Town & Country Planning",
+        "Department of Integrated Design",
+        "Department of Facilities Management",
+      ],
+    },
   ];
 
   useEffect(() => {
     fetchUsers(activeTab);
+    // Reset candidate filters when switching tabs
+    setCandidateSearch("");
+    setFilterFaculty("");
+    setFilterDept("");
     if (activeTab === "company_coordinator" || activeTab === "panelist") {
       if (companies.length === 0) fetchCompanies();
     }
@@ -64,6 +109,42 @@ export default function UserManagementPage() {
       console.error("Failed to fetch companies");
     }
   };
+
+  // Faculties derived from the departments list
+  const faculties = departments.map((d) => d.group);
+
+  // Departments for selected faculty (or all if none selected)
+  const deptOptions = filterFaculty
+    ? (departments.find((d) => d.group === filterFaculty)?.options ?? [])
+    : departments.flatMap((d) => d.options);
+
+  // Filtered candidate rows
+  const filteredUsers = activeTab === "candidate"
+    ? users.filter((u) => {
+        const q = candidateSearch.toLowerCase().trim();
+        const matchesSearch =
+          !q ||
+          u.name?.toLowerCase().includes(q) ||
+          u.email?.toLowerCase().includes(q) ||
+          u.student_id?.toLowerCase().includes(q);
+        const matchesFaculty = !filterFaculty || u.faculty === filterFaculty;
+        const matchesDept = !filterDept || u.department === filterDept;
+        return matchesSearch && matchesFaculty && matchesDept;
+      })
+    : users;
+
+  const hasActiveFilters = candidateSearch || filterFaculty || filterDept;
+
+  const isFormValid = (() => {
+    const base = formData.name.trim() !== "" && formData.email.trim() !== "";
+    if (activeTab === "company_coordinator" || activeTab === "panelist") {
+      return base && formData.company_id !== "";
+    }
+    if (activeTab === "department_coordinator") {
+      return base && formData.department !== "";
+    }
+    return base;
+  })();
 
   const handleInvite = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -149,6 +230,69 @@ export default function UserManagementPage() {
         ))}
       </div>
 
+      {/* Candidate search & filters */}
+      {activeTab === "candidate" && (
+        <div className="flex flex-wrap items-center gap-3">
+          {/* Text search */}
+          <div className="relative min-w-[220px] flex-1">
+            <Search size={16} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-[#002454]/40 pointer-events-none" />
+            <input
+              type="text"
+              placeholder="Search name, email, student ID…"
+              value={candidateSearch}
+              onChange={(e) => setCandidateSearch(e.target.value)}
+              className="w-full rounded-xl border border-[#002454]/10 bg-white py-2.5 pl-10 pr-9 text-sm text-[#002454] outline-none transition-all focus:border-[#33aeda] focus:ring-2 focus:ring-[#33aeda]/10"
+            />
+            {candidateSearch && (
+              <button type="button" onClick={() => setCandidateSearch("")} className="absolute right-3 top-1/2 -translate-y-1/2 text-[#002454]/40 hover:text-[#002454]/70">
+                <X size={14} />
+              </button>
+            )}
+          </div>
+
+          {/* Faculty filter */}
+          <div className="relative">
+            <SlidersHorizontal size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-[#002454]/40 pointer-events-none" />
+            <select
+              value={filterFaculty}
+              onChange={(e) => { setFilterFaculty(e.target.value); setFilterDept(""); }}
+              className="appearance-none rounded-xl border border-[#002454]/10 bg-white py-2.5 pl-8 pr-8 text-sm text-[#002454] outline-none transition-all focus:border-[#33aeda] focus:ring-2 focus:ring-[#33aeda]/10"
+            >
+              <option value="">All Faculties</option>
+              {faculties.map((f) => <option key={f} value={f}>{f}</option>)}
+            </select>
+            <ChevronDown size={13} className="absolute right-3 top-1/2 -translate-y-1/2 text-[#002454]/40 pointer-events-none" />
+          </div>
+
+          {/* Department filter */}
+          <div className="relative">
+            <select
+              value={filterDept}
+              onChange={(e) => setFilterDept(e.target.value)}
+              disabled={deptOptions.length === 0}
+              className="appearance-none rounded-xl border border-[#002454]/10 bg-white py-2.5 pl-4 pr-8 text-sm text-[#002454] outline-none transition-all focus:border-[#33aeda] focus:ring-2 focus:ring-[#33aeda]/10 disabled:opacity-40"
+            >
+              <option value="">All Departments</option>
+              {deptOptions.map((d) => (
+                <option key={d} value={d}>{d.split(" – ")[1] || d}</option>
+              ))}
+            </select>
+            <ChevronDown size={13} className="absolute right-3 top-1/2 -translate-y-1/2 text-[#002454]/40 pointer-events-none" />
+          </div>
+
+          {/* Clear all filters */}
+          {hasActiveFilters && (
+            <button
+              type="button"
+              onClick={() => { setCandidateSearch(""); setFilterFaculty(""); setFilterDept(""); }}
+              className="flex items-center gap-1.5 rounded-xl border border-red-200 bg-red-50 px-3 py-2.5 text-xs font-bold text-red-500 transition-colors hover:bg-red-100"
+            >
+              <X size={13} /> Clear filters
+            </button>
+          )}
+        </div>
+      )}
+
       {/* Data Table */}
       <div className="overflow-hidden rounded-2xl border border-[#002454]/10 bg-white shadow-sm">
         <div className="overflow-x-auto">
@@ -183,14 +327,16 @@ export default function UserManagementPage() {
                     <Loader2 className="mx-auto animate-spin" size={24} />
                   </td>
                 </tr>
-              ) : users.length === 0 ? (
+              ) : filteredUsers.length === 0 ? (
                 <tr>
                   <td colSpan={8} className="px-6 py-12 text-center text-[#002454]/50">
-                    No users found for this role.
+                    {hasActiveFilters
+                      ? "No candidates match your search or filters."
+                      : "No users found for this role."}
                   </td>
                 </tr>
               ) : (
-                users.map((user, idx) => (
+                filteredUsers.map((user, idx) => (
                   <tr key={idx} className="transition-colors hover:bg-[#f8fcfe]/50">
                     <td className="px-6 py-4 font-bold text-[#002454]">{user.name}</td>
                     <td className="px-6 py-4 text-[#002454]/70">{user.email}</td>
@@ -332,8 +478,10 @@ export default function UserManagementPage() {
                 </button>
                 <button
                   type="submit"
-                  disabled={isSubmitting}
-                  className="flex items-center justify-center rounded-xl bg-[#f6c430] px-4 py-2.5 text-sm font-bold text-[#002454] hover:shadow-lg disabled:opacity-50"
+                  disabled={isSubmitting || !isFormValid}
+                  className={`flex items-center justify-center rounded-xl bg-[#f6c430] px-4 py-2.5 text-sm font-bold text-[#002454] transition-all hover:shadow-lg disabled:opacity-50 ${
+                    isFormValid ? "opacity-100" : "pointer-events-none opacity-0"
+                  }`}
                 >
                   {isSubmitting ? <Loader2 className="animate-spin" size={18} /> : "Send Invitation"}
                 </button>
