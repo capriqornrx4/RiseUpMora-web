@@ -86,14 +86,6 @@ export async function POST(request: Request) {
       [newPasswordHash, userId]
     );
 
-    const newPasswordHash = await bcrypt.hash(password, 10);
-    await query(
-      `UPDATE users
-       SET password_hash = $1, email_verified_at = CURRENT_TIMESTAMP, updated_at = CURRENT_TIMESTAMP
-       WHERE id = $2`,
-      [newPasswordHash, userId],
-    );
-
     return NextResponse.json({
       success: true,
       role: user.role,
