@@ -2,12 +2,26 @@ import Image from "next/image";
 import chairPersonOne from "../assets/Chairs/3.png";
 import chairPersonTwo from "../assets/Chairs/4.png";
 import chairPersonThree from "../assets/Chairs/5.png";
+import galleryPhotoOne from "../assets/gallery grid/539132418_1173273001499008_4701588952681775030_n.jpg";
+import galleryPhotoTwo from "../assets/gallery grid/538314147_1173265281499780_317201833541306729_n.jpg";
+import galleryPhotoThree from "../assets/gallery grid/538165580_1173265591499749_97311428003324323_n.jpg";
+import galleryPhotoFour from "../assets/gallery grid/538078216_1173265738166401_7069821215011233465_n.jpg";
+import galleryPhotoFive from "../assets/gallery grid/538078210_1173276281498680_1990912075319500458_n.jpg";
+import galleryPhotoSix from "../assets/gallery grid/537748319_1173274288165546_2091514994446013539_n.jpg";
+import galleryPhotoSeven from "../assets/gallery grid/DSC00265.jpg";
+import galleryPhotoEight from "../assets/gallery grid/DSC00098.jpg";
+import galleryPhotoNine from "../assets/gallery grid/539533846_1173270468165928_5772779015697458410_n.jpg";
+import galleryPhotoTen from "../assets/gallery grid/new cf2024-0027.jpg";
+import galleryPhotoEleven from "../assets/gallery grid/DSC00654.jpg";
+import galleryPhotoTwelve from "../assets/gallery grid/new cf2024-0082.jpg";
+import ieeeSbWhiteLogo from "../assets/UOM IEEE SB LOGO - WHITE.png";
 import AboutStory from "./about-story";
 import EventTimeline from "./event-timeline";
 import Preloader from "./preloader";
 import RotatingHeadline from "./rotating-headline";
 import SiteBackground from "./site-background";
 import SiteHeader from "./site-header";
+import HeroCandidateAction from "./hero-candidate-action";
 
 const partnershipTiers = [
   {
@@ -45,25 +59,38 @@ const partnershipTiers = [
   },
 ] as const;
 
-const galleryCards = Array.from({ length: 12 }, (_, index) => ({
-  title: `Gallery ${String(index + 1).padStart(2, "0")}`,
-  label: index % 3 === 0 ? "Workshop" : index % 3 === 1 ? "Fair" : "Community",
+const galleryCards = [
+  galleryPhotoOne,
+  galleryPhotoTwo,
+  galleryPhotoThree,
+  galleryPhotoFour,
+  galleryPhotoFive,
+  galleryPhotoSix,
+  galleryPhotoSeven,
+  galleryPhotoEight,
+  galleryPhotoNine,
+  galleryPhotoTen,
+  galleryPhotoEleven,
+  galleryPhotoTwelve,
+].map((image, index) => ({
+  image,
+  alt: `Rise Up Mora gallery moment ${String(index + 1).padStart(2, "0")}`,
 }));
 
 const chairPersons = [
   {
-    name: "Person 1",
+    name: "Imesh Munasinghe",
     role: "Event Chairperson",
     image: chairPersonOne,
   },
   {
-    name: "Person 2",
-    role: "Event Chairperson",
+    name: "Yashini Gunasekara",
+    role: "Event Vice Chairperson",
     image: chairPersonTwo,
   },
   {
-    name: "Person 3",
-    role: "Event Chairperson",
+    name: "Thamalu Bambaravange",
+    role: "Event Vice Chairperson",
     image: chairPersonThree,
   },
 ] as const;
@@ -118,9 +145,7 @@ export default function Home() {
               expert-led webinars and workshops.
             </p>
             <div className="hero-actions">
-              <a className="hero-primary" href="#sign-in">
-                Sign Up
-              </a>
+              <HeroCandidateAction />
               <a className="hero-secondary" href="#timeline">
                 View timeline
               </a>
@@ -249,16 +274,19 @@ export default function Home() {
             <h2>Moments from Rise Up Mora</h2>
           </div>
 
-          <div className="gallery-grid" aria-label="Rise Up Mora gallery placeholders">
+          <div className="gallery-grid" aria-label="Rise Up Mora gallery">
             {galleryCards.map((card, index) => (
               <article
                 className={`gallery-card gallery-card--${index + 1}`}
-                key={card.title}
+                key={card.alt}
               >
-                <div>
-                  <span>{card.label}</span>
-                  <h3>{card.title}</h3>
-                </div>
+                <Image
+                  className="gallery-card__image"
+                  src={card.image}
+                  alt={card.alt}
+                  placeholder="blur"
+                  sizes="(max-width: 48rem) 50vw, (max-width: 62rem) 25vw, 21rem"
+                />
               </article>
             ))}
           </div>
@@ -289,24 +317,18 @@ export default function Home() {
           </div>
         </section>
 
-        <section className="home-sections" aria-label="Explore Rise Up Mora">
-          <article id="contact">
-            <span>01</span>
-            <h2>Contact</h2>
-            <p>Connect with the team and start a conversation.</p>
-          </article>
-          <article id="sign-in">
-            <span>02</span>
-            <h2>Member access</h2>
-            <p>Sign in to access your Rise Up Mora workspace.</p>
-          </article>
-        </section>
       </main>
 
-      <footer className="site-footer">
+      <footer className="site-footer" id="contact">
         <div className="site-footer__inner">
           <section className="site-footer__brand" aria-label="IEEE Student Branch UoM">
             <h2>IEEE Student Branch UoM</h2>
+            <Image
+              className="site-footer__logo"
+              src={ieeeSbWhiteLogo}
+              alt="UoM IEEE Student Branch"
+              sizes="(max-width: 48rem) 12rem, 14rem"
+            />
             <p>
               The Institute of Electrical and Electronics Engineers (IEEE)
               Student Branch at University of Moratuwa is dedicated to fostering

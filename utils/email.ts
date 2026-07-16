@@ -66,3 +66,67 @@ export const sendInvitationEmail = async (to: string, token: string, role: strin
     html,
   });
 };
+
+export const sendCandidateVerificationEmail = async (
+  to: string,
+  token: string,
+  name: string,
+) => {
+  const baseUrl = process.env.NEXTAUTH_URL;
+  if (!baseUrl) {
+    throw new Error("NEXTAUTH_URL is required to send candidate verification emails");
+  }
+  const setupUrl = `${baseUrl}/setup-account?token=${encodeURIComponent(token)}`;
+  const safeName = name
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
+    .replaceAll('"', "&quot;")
+    .replaceAll("'", "&#039;");
+
+  const html = `
+    <!DOCTYPE html>
+    <html>
+    <head>
+      <meta charset="utf-8">
+      <title>Verify your Rise Up Mora email</title>
+      <style>
+        body { font-family: Arial, sans-serif; background-color: #f8fcfe; margin: 0; padding: 0; }
+        .container { max-width: 600px; margin: 40px auto; background: #ffffff; border-radius: 8px; overflow: hidden; box-shadow: 0 4px 24px rgba(0,36,84,0.05); border: 1px solid rgba(0,36,84,0.1); }
+        .header { background-color: #002454; padding: 32px 24px; text-align: center; }
+        .header h1 { color: #ffffff; margin: 0; font-size: 24px; font-weight: 800; }
+        .header h1 span { color: #f6c430; }
+        .content { padding: 40px 32px; color: #333333; }
+        .content h2 { color: #002454; margin-top: 0; font-size: 20px; }
+        .content p { line-height: 1.6; margin-bottom: 24px; color: #4a5568; }
+        .button-container { text-align: center; margin: 32px 0; }
+        .button { background-color: #f6c430; color: #002454; text-decoration: none; padding: 14px 28px; border-radius: 8px; font-weight: 700; display: inline-block; font-size: 16px; }
+        .footer { background-color: #f8fcfe; padding: 24px; text-align: center; font-size: 13px; color: #718096; border-top: 1px solid rgba(0,36,84,0.05); }
+      </style>
+    </head>
+    <body>
+      <div class="container">
+        <div class="header"><h1>Rise Up <span>Mora</span></h1></div>
+        <div class="content">
+          <h2>Verify your email</h2>
+          <p>Hello ${safeName},</p>
+          <p>Thank you for registering as a candidate. Verify your email address and choose your password to activate your account. This link expires in 7 days.</p>
+          <div class="button-container">
+            <a href="${setupUrl}" class="button">Verify Email &amp; Set Password</a>
+          </div>
+          <p style="font-size: 14px;">If the button does not work, paste this link into your browser:<br>
+          <a href="${setupUrl}" style="color: #1688b2; word-break: break-all;">${setupUrl}</a></p>
+        </div>
+        <div class="footer">&copy; ${new Date().getFullYear()} Rise Up Mora. All rights reserved.</div>
+      </div>
+    </body>
+    </html>
+  `;
+
+  await transporter.sendMail({
+    from: `"Rise Up Mora" <${process.env.EMAIL_USER}>`,
+    to,
+    subject: "Verify your Rise Up Mora candidate account",
+    html,
+  });
+};
