@@ -16,6 +16,19 @@ export default function UserManagementPage() {
   const [filterFaculty, setFilterFaculty] = useState("");
   const [filterDept, setFilterDept] = useState("");
 
+  // Company coordinator search & filter
+  const [coordSearch, setCoordSearch] = useState("");
+  const [filterCompany, setFilterCompany] = useState("");
+
+  // Department coordinator search & filter
+  const [deptCoordSearch, setDeptCoordSearch] = useState("");
+  const [filterDeptCoord, setFilterDeptCoord] = useState("");
+
+  // Panelist search & filter
+  const [panelSearch, setPanelSearch] = useState("");
+  const [filterPanelCompany, setFilterPanelCompany] = useState("");
+  const [filterPanelNumber, setFilterPanelNumber] = useState("");
+
   // Modal State
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isDeptDropdownOpen, setIsDeptDropdownOpen] = useState(false);
@@ -78,10 +91,17 @@ export default function UserManagementPage() {
 
   useEffect(() => {
     fetchUsers(activeTab);
-    // Reset candidate filters when switching tabs
+    // Reset all filters when switching tabs
     setCandidateSearch("");
     setFilterFaculty("");
     setFilterDept("");
+    setCoordSearch("");
+    setFilterCompany("");
+    setDeptCoordSearch("");
+    setFilterDeptCoord("");
+    setPanelSearch("");
+    setFilterPanelCompany("");
+    setFilterPanelNumber("");
     if (activeTab === "company_coordinator" || activeTab === "panelist") {
       if (companies.length === 0) fetchCompanies();
     }
@@ -118,9 +138,10 @@ export default function UserManagementPage() {
     ? (departments.find((d) => d.group === filterFaculty)?.options ?? [])
     : departments.flatMap((d) => d.options);
 
-  // Filtered candidate rows
-  const filteredUsers = activeTab === "candidate"
-    ? users.filter((u) => {
+  // Filtered rows
+  const filteredUsers = (() => {
+    if (activeTab === "candidate") {
+      return users.filter((u) => {
         const q = candidateSearch.toLowerCase().trim();
         const matchesSearch =
           !q ||
@@ -130,10 +151,55 @@ export default function UserManagementPage() {
         const matchesFaculty = !filterFaculty || u.faculty === filterFaculty;
         const matchesDept = !filterDept || u.department === filterDept;
         return matchesSearch && matchesFaculty && matchesDept;
-      })
-    : users;
+      });
+    }
+    if (activeTab === "company_coordinator") {
+      return users.filter((u) => {
+        const q = coordSearch.toLowerCase().trim();
+        const matchesSearch =
+          !q ||
+          u.name?.toLowerCase().includes(q) ||
+          u.email?.toLowerCase().includes(q);
+        const matchesCompany = !filterCompany || u.company_name === filterCompany;
+        return matchesSearch && matchesCompany;
+      });
+    }
+    if (activeTab === "department_coordinator") {
+      return users.filter((u) => {
+        const q = deptCoordSearch.toLowerCase().trim();
+        const matchesSearch =
+          !q ||
+          u.name?.toLowerCase().includes(q) ||
+          u.email?.toLowerCase().includes(q);
+        const matchesDept = !filterDeptCoord || u.department === filterDeptCoord;
+        return matchesSearch && matchesDept;
+      });
+    }
+    if (activeTab === "panelist") {
+      return users.filter((u) => {
+        const q = panelSearch.toLowerCase().trim();
+        const matchesSearch =
+          !q ||
+          u.name?.toLowerCase().includes(q) ||
+          u.email?.toLowerCase().includes(q);
+        const matchesCompany = !filterPanelCompany || u.company_name === filterPanelCompany;
+        const matchesPanel = !filterPanelNumber || String(u.panel_number) === filterPanelNumber;
+        return matchesSearch && matchesCompany && matchesPanel;
+      });
+    }
+    return users;
+  })();
 
-  const hasActiveFilters = candidateSearch || filterFaculty || filterDept;
+  const hasActiveFilters =
+    (activeTab === "candidate" && (candidateSearch || filterFaculty || filterDept)) ||
+    (activeTab === "company_coordinator" && (coordSearch || filterCompany)) ||
+    (activeTab === "department_coordinator" && (deptCoordSearch || filterDeptCoord)) ||
+    (activeTab === "panelist" && (panelSearch || filterPanelCompany || filterPanelNumber));
+
+  // Dynamic panel number options — derived from the current panelists list
+  const panelNumberOptions = activeTab === "panelist"
+    ? [...new Set(users.map((u) => u.panel_number).filter(Boolean))].sort((a, b) => Number(a) - Number(b))
+    : [];
 
   const isFormValid = (() => {
     const base = formData.name.trim() !== "" && formData.email.trim() !== "";
@@ -285,6 +351,174 @@ export default function UserManagementPage() {
             <button
               type="button"
               onClick={() => { setCandidateSearch(""); setFilterFaculty(""); setFilterDept(""); }}
+              className="flex items-center gap-1.5 rounded-xl border border-red-200 bg-red-50 px-3 py-2.5 text-xs font-bold text-red-500 transition-colors hover:bg-red-100"
+            >
+              <X size={13} /> Clear filters
+            </button>
+          )}
+        </div>
+      )}
+
+      {/* Company Coordinator search & filters */}
+      {activeTab === "company_coordinator" && (
+        <div className="flex flex-wrap items-center gap-3">
+          {/* Text search */}
+          <div className="relative min-w-[220px] flex-1">
+            <Search size={16} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-[#002454]/40 pointer-events-none" />
+            <input
+              type="text"
+              placeholder="Search name or email…"
+              value={coordSearch}
+              onChange={(e) => setCoordSearch(e.target.value)}
+              className="w-full rounded-xl border border-[#002454]/10 bg-white py-2.5 pl-10 pr-9 text-sm text-[#002454] outline-none transition-all focus:border-[#33aeda] focus:ring-2 focus:ring-[#33aeda]/10"
+            />
+            {coordSearch && (
+              <button type="button" onClick={() => setCoordSearch("")} className="absolute right-3 top-1/2 -translate-y-1/2 text-[#002454]/40 hover:text-[#002454]/70">
+                <X size={14} />
+              </button>
+            )}
+          </div>
+
+          {/* Company filter — dynamic from fetched companies */}
+          <div className="relative">
+            <Building2 size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-[#002454]/40 pointer-events-none" />
+            <select
+              value={filterCompany}
+              onChange={(e) => setFilterCompany(e.target.value)}
+              className="appearance-none rounded-xl border border-[#002454]/10 bg-white py-2.5 pl-8 pr-8 text-sm text-[#002454] outline-none transition-all focus:border-[#33aeda] focus:ring-2 focus:ring-[#33aeda]/10"
+            >
+              <option value="">All Companies</option>
+              {companies.map((c) => (
+                <option key={c.id} value={c.name}>{c.name}</option>
+              ))}
+            </select>
+            <ChevronDown size={13} className="absolute right-3 top-1/2 -translate-y-1/2 text-[#002454]/40 pointer-events-none" />
+          </div>
+
+          {/* Clear filters */}
+          {(coordSearch || filterCompany) && (
+            <button
+              type="button"
+              onClick={() => { setCoordSearch(""); setFilterCompany(""); }}
+              className="flex items-center gap-1.5 rounded-xl border border-red-200 bg-red-50 px-3 py-2.5 text-xs font-bold text-red-500 transition-colors hover:bg-red-100"
+            >
+              <X size={13} /> Clear filters
+            </button>
+          )}
+        </div>
+      )}
+
+      {/* Department Coordinator search & filters */}
+      {activeTab === "department_coordinator" && (
+        <div className="flex flex-wrap items-center gap-3">
+          {/* Text search */}
+          <div className="relative min-w-[220px] flex-1">
+            <Search size={16} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-[#002454]/40 pointer-events-none" />
+            <input
+              type="text"
+              placeholder="Search name or email…"
+              value={deptCoordSearch}
+              onChange={(e) => setDeptCoordSearch(e.target.value)}
+              className="w-full rounded-xl border border-[#002454]/10 bg-white py-2.5 pl-10 pr-9 text-sm text-[#002454] outline-none transition-all focus:border-[#33aeda] focus:ring-2 focus:ring-[#33aeda]/10"
+            />
+            {deptCoordSearch && (
+              <button type="button" onClick={() => setDeptCoordSearch("")} className="absolute right-3 top-1/2 -translate-y-1/2 text-[#002454]/40 hover:text-[#002454]/70">
+                <X size={14} />
+              </button>
+            )}
+          </div>
+
+          {/* Department filter — grouped by faculty */}
+          <div className="relative">
+            <BookOpen size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-[#002454]/40 pointer-events-none" />
+            <select
+              value={filterDeptCoord}
+              onChange={(e) => setFilterDeptCoord(e.target.value)}
+              className="appearance-none rounded-xl border border-[#002454]/10 bg-white py-2.5 pl-8 pr-8 text-sm text-[#002454] outline-none transition-all focus:border-[#33aeda] focus:ring-2 focus:ring-[#33aeda]/10"
+            >
+              <option value="">All Departments</option>
+              {departments.map((group) => (
+                <optgroup key={group.group} label={group.group}>
+                  {group.options.map((dept) => (
+                    <option key={dept} value={dept}>{dept}</option>
+                  ))}
+                </optgroup>
+              ))}
+            </select>
+            <ChevronDown size={13} className="absolute right-3 top-1/2 -translate-y-1/2 text-[#002454]/40 pointer-events-none" />
+          </div>
+
+          {/* Clear filters */}
+          {(deptCoordSearch || filterDeptCoord) && (
+            <button
+              type="button"
+              onClick={() => { setDeptCoordSearch(""); setFilterDeptCoord(""); }}
+              className="flex items-center gap-1.5 rounded-xl border border-red-200 bg-red-50 px-3 py-2.5 text-xs font-bold text-red-500 transition-colors hover:bg-red-100"
+            >
+              <X size={13} /> Clear filters
+            </button>
+          )}
+        </div>
+      )}
+
+      {/* Panelist search & filters */}
+      {activeTab === "panelist" && (
+        <div className="flex flex-wrap items-center gap-3">
+          {/* Text search */}
+          <div className="relative min-w-[220px] flex-1">
+            <Search size={16} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-[#002454]/40 pointer-events-none" />
+            <input
+              type="text"
+              placeholder="Search name or email…"
+              value={panelSearch}
+              onChange={(e) => setPanelSearch(e.target.value)}
+              className="w-full rounded-xl border border-[#002454]/10 bg-white py-2.5 pl-10 pr-9 text-sm text-[#002454] outline-none transition-all focus:border-[#33aeda] focus:ring-2 focus:ring-[#33aeda]/10"
+            />
+            {panelSearch && (
+              <button type="button" onClick={() => setPanelSearch("")} className="absolute right-3 top-1/2 -translate-y-1/2 text-[#002454]/40 hover:text-[#002454]/70">
+                <X size={14} />
+              </button>
+            )}
+          </div>
+
+          {/* Company filter — dynamic from fetched companies */}
+          <div className="relative">
+            <Building2 size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-[#002454]/40 pointer-events-none" />
+            <select
+              value={filterPanelCompany}
+              onChange={(e) => setFilterPanelCompany(e.target.value)}
+              className="appearance-none rounded-xl border border-[#002454]/10 bg-white py-2.5 pl-8 pr-8 text-sm text-[#002454] outline-none transition-all focus:border-[#33aeda] focus:ring-2 focus:ring-[#33aeda]/10"
+            >
+              <option value="">All Companies</option>
+              {companies.map((c) => (
+                <option key={c.id} value={c.name}>{c.name}</option>
+              ))}
+            </select>
+            <ChevronDown size={13} className="absolute right-3 top-1/2 -translate-y-1/2 text-[#002454]/40 pointer-events-none" />
+          </div>
+
+          {/* Panel number filter — dynamic from fetched panelists */}
+          <div className="relative">
+            <SlidersHorizontal size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-[#002454]/40 pointer-events-none" />
+            <select
+              value={filterPanelNumber}
+              onChange={(e) => setFilterPanelNumber(e.target.value)}
+              disabled={panelNumberOptions.length === 0}
+              className="appearance-none rounded-xl border border-[#002454]/10 bg-white py-2.5 pl-8 pr-8 text-sm text-[#002454] outline-none transition-all focus:border-[#33aeda] focus:ring-2 focus:ring-[#33aeda]/10 disabled:opacity-40"
+            >
+              <option value="">All Panels</option>
+              {panelNumberOptions.map((n) => (
+                <option key={n} value={String(n)}>Panel {n}</option>
+              ))}
+            </select>
+            <ChevronDown size={13} className="absolute right-3 top-1/2 -translate-y-1/2 text-[#002454]/40 pointer-events-none" />
+          </div>
+
+          {/* Clear filters */}
+          {(panelSearch || filterPanelCompany || filterPanelNumber) && (
+            <button
+              type="button"
+              onClick={() => { setPanelSearch(""); setFilterPanelCompany(""); setFilterPanelNumber(""); }}
               className="flex items-center gap-1.5 rounded-xl border border-red-200 bg-red-50 px-3 py-2.5 text-xs font-bold text-red-500 transition-colors hover:bg-red-100"
             >
               <X size={13} /> Clear filters

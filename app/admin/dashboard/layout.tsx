@@ -15,7 +15,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   const pathname = usePathname();
 
   return (
-    <div className="flex min-h-screen bg-[#f8fcfe]">
+    <div className="flex min-h-screen bg-[#f4f7fb] bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-[#e3f0f8] via-[#f8fcfe] to-[#f4f7fb]">
       {/* Sidebar */}
       <aside className="w-64 border-r border-[#002454]/10 bg-white/70 shadow-[0_2rem_5rem_rgba(0,36,84,0.05)] backdrop-blur-xl">
         <div className="flex h-16 items-center px-6 border-b border-[#002454]/10">
@@ -46,10 +46,10 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
           })}
         </nav>
 
-        <div className="absolute bottom-0 w-full p-4">
+        <div className="absolute bottom-0 w-full p-4 border-t border-[#002454]/5 bg-white/50 backdrop-blur-md">
           <button
             onClick={() => signOut({ callbackUrl: "/admin/login" })}
-            className="flex w-full items-center gap-3 rounded-xl px-4 py-3 text-sm font-bold text-red-500 transition-all hover:bg-red-50 hover:text-red-600"
+            className="flex w-full items-center justify-center gap-2.5 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm font-bold text-red-600 shadow-sm transition-all hover:-translate-y-0.5 hover:border-red-300 hover:bg-red-100 hover:shadow-md"
           >
             <LogOut size={18} />
             Sign Out
