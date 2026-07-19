@@ -2,58 +2,47 @@
 
 import { useEffect, useRef, useState } from "react";
 
-const events = [
+type TimelineEvent = {
+  dateLabel: string;
+  type: string;
+  title: string;
+};
+
+const events: readonly TimelineEvent[] = [
   {
-    day: "14",
-    month: "July",
-    year: "2026",
-    type: "Workshop",
-    title: "LinkedIn Profile Creation and Maintenance Workshop",
+    dateLabel: "21st",
+    type: "Session",
+    title: "Awareness session",
   },
   {
-    day: "17",
-    month: "July",
-    year: "2026",
+    dateLabel: "21/July",
     type: "Registration",
-    title:
-      "Registrations open for the Internship and Mock Interview Fair for University of Moratuwa undergraduates",
+    title: "Registration",
   },
   {
-    day: "22",
-    month: "July",
-    year: "2026",
+    dateLabel: "6th",
+    type: "Session",
+    title: "Mock interview session",
+  },
+  {
+    dateLabel: "25/July",
     type: "Workshop",
-    title: "Excelling in CV Writing Workshop",
+    title: "LinkedIn profile creation & maintenance",
   },
   {
-    day: "28",
-    month: "July",
-    year: "2026",
+    dateLabel: "30/July",
     type: "Workshop",
-    title: "Mastering the Art of Acing Interview Workshop",
+    title: "Excelling in CV writing",
   },
   {
-    day: "29",
-    month: "July",
-    year: "2026",
-    type: "Registration",
-    title:
-      "Registrations close for the Internship and Mock Interview Fair for University of Moratuwa undergraduates",
+    dateLabel: "04/Aug",
+    type: "Workshop",
+    title: "Mastering the art of acing Interviews",
   },
   {
-    day: "06",
-    month: "August",
-    year: "2026",
-    type: "Flagship event",
+    dateLabel: "date to be decided",
+    type: "Other event",
     title: "Internship and Mock Interview Fair",
-  },
-  {
-    day: "",
-    month: "August",
-    year: "2026",
-    type: "Industry exposure",
-    title:
-      "Company Awareness and Industry Exposure Sessions with leading companies in the industry",
   },
 ] as const;
 
@@ -104,22 +93,19 @@ export default function EventTimeline() {
             <li
               className={index <= activeIndex ? "timeline-event--active" : ""}
               data-index={index}
-              key={`${event.day}-${event.month}-${event.title}`}
+              key={`${event.dateLabel}-${event.title}`}
               ref={(element) => {
                 eventRefs.current[index] = element;
               }}
             >
               <time
-                className={event.day ? "" : "timeline-date--month-only"}
-                dateTime={
-                  event.day
-                    ? `2026-${event.month === "July" ? "07" : "08"}-${event.day}`
-                    : "2026-08"
+                className={
+                  event.dateLabel === "date to be decided"
+                    ? "timeline-date--tbd"
+                    : ""
                 }
               >
-                {event.day && <strong>{event.day}</strong>}
-                <span>{event.month}</span>
-                <small>{event.year}</small>
+                <strong>{event.dateLabel}</strong>
               </time>
 
               <div className="timeline-node" aria-hidden="true">

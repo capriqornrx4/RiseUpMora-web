@@ -997,6 +997,12 @@ html {
   line-height: 0.84;
 }
 
+.timeline-track time.timeline-date--tbd strong {
+  font-size: clamp(1.1rem, 2vw, 1.65rem);
+  letter-spacing: 0.01em;
+  line-height: 1.2;
+}
+
 .timeline-track time span {
   margin-top: 0.65rem;
   font-size: 1rem;
