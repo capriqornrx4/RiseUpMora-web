@@ -10,34 +10,34 @@ type TimelineEvent = {
 
 const events: readonly TimelineEvent[] = [
   {
-    dateLabel: "21st",
+    dateLabel: "21 July",
     type: "Session",
-    title: "Awareness session",
+    title: "Awareness Session",
   },
   {
-    dateLabel: "21/July",
+    dateLabel: "21 July",
     type: "Registration",
     title: "Registration",
   },
   {
-    dateLabel: "6th",
+    dateLabel: "06 August",
     type: "Session",
-    title: "Mock interview session",
+    title: "Mock Interview Session",
   },
   {
-    dateLabel: "25/July",
+    dateLabel: "25 July",
     type: "Workshop",
-    title: "LinkedIn profile creation & maintenance",
+    title: "LinkedIn Profile Creation & Maintenance",
   },
   {
-    dateLabel: "30/July",
+    dateLabel: "30 July",
     type: "Workshop",
-    title: "Excelling in CV writing",
+    title: "Excelling in CV Writing",
   },
   {
-    dateLabel: "04/Aug",
+    dateLabel: "04 August",
     type: "Workshop",
-    title: "Mastering the art of acing Interviews",
+    title: "Mastering the Art of Acing Interviews",
   },
   {
     dateLabel: "date to be decided",
