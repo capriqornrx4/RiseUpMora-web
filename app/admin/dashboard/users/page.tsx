@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Loader2, Plus, Mail, Building2, BookOpen, ChevronDown, Trash2, Search, X, SlidersHorizontal } from "lucide-react";
+import { Loader2, Plus, Mail, Building2, BookOpen, ChevronDown, Trash2, Search, X, SlidersHorizontal, User, FileText, ListOrdered, Phone, GraduationCap } from "lucide-react";
 
 type RoleType = "candidate" | "company_coordinator" | "department_coordinator" | "panelist";
 
@@ -33,6 +33,7 @@ export default function UserManagementPage() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isDeptDropdownOpen, setIsDeptDropdownOpen] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [viewUser, setViewUser] = useState<any>(null); // State for the View Details modal
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -102,8 +103,8 @@ export default function UserManagementPage() {
     setPanelSearch("");
     setFilterPanelCompany("");
     setFilterPanelNumber("");
-    if (activeTab === "company_coordinator" || activeTab === "panelist") {
-      if (companies.length === 0) fetchCompanies();
+    if (companies.length === 0) {
+      fetchCompanies();
     }
   }, [activeTab]);
 
@@ -527,31 +528,33 @@ export default function UserManagementPage() {
         </div>
       )}
 
-      {/* Data Table */}
       <div className="overflow-hidden rounded-2xl border border-[#002454]/10 bg-white shadow-sm">
-        <div className="overflow-x-auto">
-          <table className="w-full text-left text-sm whitespace-nowrap">
-            <thead className="border-b border-[#002454]/5 bg-[#f8fcfe] text-[#002454]/60">
+        <div style={{ maxHeight: '400px' }} className="overflow-auto w-full">
+          <table className="w-full text-left text-base whitespace-nowrap relative">
+            <thead className="sticky top-0 z-10 bg-[#f8fcfe] text-[#002454]/60 shadow-[0_1px_0_0_rgba(0,36,84,0.05)]">
               <tr>
-                <th className="px-6 py-4 font-bold">Name</th>
-                <th className="px-6 py-4 font-bold">Email</th>
+                <th className="px-5 py-3 font-bold">Name</th>
+                <th className="px-5 py-3 font-bold">Email</th>
                 {activeTab === "candidate" && (
                   <>
-                    <th className="px-6 py-4 font-bold">Student ID</th>
-                    <th className="px-6 py-4 font-bold">Faculty</th>
-                    <th className="px-6 py-4 font-bold">Department</th>
+                    <th className="px-5 py-3 font-bold">Student ID</th>
+                    <th className="px-5 py-3 font-bold">Faculty</th>
+                    <th className="px-5 py-3 font-bold">Department</th>
                   </>
                 )}
                 {(activeTab === "company_coordinator" || activeTab === "panelist") && (
-                  <th className="px-6 py-4 font-bold">Company</th>
+                  <th className="px-5 py-3 font-bold">Company</th>
                 )}
                 {activeTab === "department_coordinator" && (
-                  <th className="px-6 py-4 font-bold">Department</th>
+                  <th className="px-5 py-3 font-bold">Department</th>
                 )}
                 {activeTab === "panelist" && (
-                  <th className="px-6 py-4 font-bold">Panel #</th>
+                  <th className="px-5 py-3 font-bold">Panel #</th>
                 )}
-                <th className="px-6 py-4 font-bold text-right">Actions</th>
+                {activeTab !== "candidate" && (
+                  <th className="px-5 py-3 font-bold">Status</th>
+                )}
+                <th className="px-5 py-3 font-bold text-right">Actions</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-[#002454]/5">
@@ -572,26 +575,47 @@ export default function UserManagementPage() {
               ) : (
                 filteredUsers.map((user, idx) => (
                   <tr key={idx} className="transition-colors hover:bg-[#f8fcfe]/50">
-                    <td className="px-6 py-4 font-bold text-[#002454]">{user.name}</td>
-                    <td className="px-6 py-4 text-[#002454]/70">{user.email}</td>
+                    <td className="px-5 py-3 font-bold text-[#002454] max-w-[150px] sm:max-w-[200px] truncate" title={user.name}>{user.name}</td>
+                    <td className="px-5 py-3 text-[#002454]/70 max-w-[150px] sm:max-w-[200px] truncate" title={user.email}>{user.email}</td>
                     {activeTab === "candidate" && (
                       <>
-                        <td className="px-6 py-4 text-[#002454]/70">{user.student_id}</td>
-                        <td className="px-6 py-4 text-[#002454]/70">{user.faculty}</td>
-                        <td className="px-6 py-4 text-[#002454]/70">{user.department}</td>
+                        <td className="px-5 py-3 text-[#002454]/70">{user.student_id}</td>
+                        <td className="px-5 py-3 text-[#002454]/70 max-w-[150px] sm:max-w-[200px] truncate" title={user.faculty}>{user.faculty}</td>
+                        <td className="px-5 py-3 text-[#002454]/70 max-w-[150px] sm:max-w-[250px] truncate" title={user.department}>{user.department}</td>
                       </>
                     )}
                     {(activeTab === "company_coordinator" || activeTab === "panelist") && (
-                      <td className="px-6 py-4 text-[#002454]/70">{user.company_name}</td>
+                      <td className="px-5 py-3 text-[#002454]/70 max-w-[150px] sm:max-w-[200px] truncate" title={user.company_name}>{user.company_name}</td>
                     )}
                     {activeTab === "department_coordinator" && (
-                      <td className="px-6 py-4 text-[#002454]/70">{user.department}</td>
+                      <td className="px-5 py-3 text-[#002454]/70 max-w-[150px] sm:max-w-[250px] truncate" title={user.department}>{user.department}</td>
                     )}
                     {activeTab === "panelist" && (
-                      <td className="px-6 py-4 text-[#002454]/70">{user.panel_number}</td>
+                      <td className="px-5 py-3 text-[#002454]/70">{user.panel_number}</td>
                     )}
-                    <td className="px-6 py-4 text-right">
+                    {activeTab !== "candidate" && (
+                      <td className="px-5 py-3">
+                        {user.email_verified_at ? (
+                          <span className="inline-flex items-center rounded-full bg-green-100 px-2 py-0.5 text-[10px] font-bold text-green-700">
+                            Verified
+                          </span>
+                        ) : (
+                          <span className="inline-flex items-center rounded-full bg-yellow-100 px-2 py-0.5 text-[10px] font-bold text-yellow-700">
+                            Pending
+                          </span>
+                        )}
+                      </td>
+                    )}
+                    <td className="px-5 py-3 text-right">
                       <div className="flex items-center justify-end gap-2">
+                        {activeTab === "candidate" && (
+                          <button
+                            onClick={() => setViewUser(user)}
+                            className="rounded-lg bg-[#33aeda]/10 px-3 py-2 text-xs font-extrabold text-[#33aeda] transition-colors hover:bg-[#33aeda]/20"
+                          >
+                            View
+                          </button>
+                        )}
                         <button
                           onClick={() => handleDeleteUser(user.user_id)}
                           className="rounded-lg p-2 text-red-500 transition-colors hover:bg-red-50"
@@ -721,6 +745,137 @@ export default function UserManagementPage() {
                 </button>
               </div>
             </form>
+          </div>
+        </div>
+      )}
+      {/* View User Modal */}
+      {viewUser && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-[#002454]/40 p-4 backdrop-blur-sm transition-all duration-300">
+          <div className="w-full max-w-2xl flex flex-col max-h-[95vh] sm:max-h-[90vh] overflow-hidden rounded-3xl bg-white shadow-2xl relative animate-in fade-in zoom-in-95 duration-200">
+            {/* Modal Header Cover */}
+            <div className="shrink-0 bg-gradient-to-r from-[#002454] to-[#003b8c] px-6 sm:px-8 py-6 sm:py-8 relative">
+              <button
+                onClick={() => setViewUser(null)}
+                className="absolute right-4 top-4 rounded-full bg-white/10 p-2 text-white transition-colors hover:bg-white/20"
+              >
+                <X size={20} />
+              </button>
+              <div className="flex items-center gap-5">
+                <div className="flex h-20 w-20 sm:h-24 sm:w-24 shrink-0 items-center justify-center rounded-2xl border-2 border-white/20 bg-white/10 backdrop-blur-sm">
+                  <User size={36} className="text-white/70 sm:w-10 sm:h-10 w-8 h-8" />
+                </div>
+                <div className="min-w-0">
+                  <h2 className="text-xl sm:text-2xl font-black text-white truncate">{viewUser.name}</h2>
+                  <div className="mt-2 flex flex-col gap-1.5 text-sm">
+                    <div className="flex items-center gap-2 text-white/70">
+                      <Mail size={14} className="shrink-0" />
+                      <span className="truncate">{viewUser.email}</span>
+                    </div>
+                    {viewUser.contact_number && (
+                      <div className="flex items-center gap-2 text-white/70">
+                        <Phone size={14} className="shrink-0" />
+                        <span>{viewUser.contact_number}</span>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Modal Body */}
+            <div className="flex-1 overflow-y-auto px-6 sm:px-8 pb-8 pt-6 sm:pt-8">
+
+              <div className="grid gap-6 md:grid-cols-2">
+                {/* Left Column: Academic Info + CV */}
+                <div className="space-y-6">
+                  {/* Academic Info */}
+                  <div className="rounded-2xl border border-[#002454]/10 bg-[#f8fcfe] p-5">
+                    <h3 className="mb-4 flex items-center gap-2 text-sm font-extrabold uppercase tracking-wider text-[#002454]/50">
+                      <GraduationCap size={16} /> Academic Profile
+                    </h3>
+                    <div className="space-y-3">
+                      <div>
+                        <span className="block text-xs font-bold text-[#002454]/40">Student ID</span>
+                        <span className="font-medium text-[#002454]">{viewUser.student_id || "N/A"}</span>
+                      </div>
+                      <div>
+                        <span className="block text-xs font-bold text-[#002454]/40">Faculty</span>
+                        <span className="font-medium text-[#002454]">{viewUser.faculty || "N/A"}</span>
+                      </div>
+                      <div>
+                        <span className="block text-xs font-bold text-[#002454]/40">Department</span>
+                        <span className="font-medium text-[#002454]">{viewUser.department || "N/A"}</span>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* CV Section */}
+                  <div className="rounded-2xl border border-[#002454]/10 bg-white p-5 shadow-sm">
+                    <h3 className="mb-3 flex items-center gap-2 text-sm font-extrabold uppercase tracking-wider text-[#002454]/50">
+                      <FileText size={16} /> Resume / CV
+                    </h3>
+                    {viewUser.cv_url ? (
+                      <a
+                        href={viewUser.cv_url}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="group flex items-center justify-between rounded-xl border border-green-200 bg-green-50 p-3 transition-colors hover:bg-green-100"
+                      >
+                        <div className="flex items-center gap-3">
+                          <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-green-200 text-green-700">
+                            <FileText size={20} />
+                          </div>
+                          <div>
+                            <span className="block text-sm font-bold text-green-900">View Document</span>
+                            <span className="block text-xs text-green-700">Opens in new tab</span>
+                          </div>
+                        </div>
+                      </a>
+                    ) : (
+                      <div className="flex items-center gap-3 rounded-xl border border-red-100 bg-red-50 p-3">
+                        <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-red-100 text-red-500">
+                          <FileText size={20} />
+                        </div>
+                        <div>
+                          <span className="block text-sm font-bold text-red-800">Not Uploaded</span>
+                          <span className="block text-xs text-red-600">Candidate hasn't provided a CV</span>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                </div>
+
+                {/* Right Column: Company Preferences */}
+                <div className="rounded-2xl border border-[#002454]/10 bg-white p-5 shadow-sm">
+                  <h3 className="mb-4 flex items-center gap-2 text-sm font-extrabold uppercase tracking-wider text-[#002454]/50">
+                    <ListOrdered size={16} /> Company Preferences
+                  </h3>
+                  {[viewUser.pref_1, viewUser.pref_2, viewUser.pref_3, viewUser.pref_4].some(p => p) ? (
+                    <div className="space-y-2">
+                      {[viewUser.pref_1, viewUser.pref_2, viewUser.pref_3, viewUser.pref_4]
+                        .filter(Boolean)
+                        .map((prefId, i) => {
+                          const comp = companies.find(c => c.id === prefId);
+                          return (
+                            <div key={i} className="flex items-center gap-3 rounded-xl border border-[#002454]/5 bg-[#f8fcfe] p-2.5">
+                              <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-[#33aeda]/10 text-xs font-black text-[#33aeda]">
+                                {i + 1}
+                              </span>
+                              <span className="text-sm font-bold text-[#002454]">
+                                {comp ? comp.name : "Unknown Company"}
+                              </span>
+                            </div>
+                          );
+                        })}
+                    </div>
+                  ) : (
+                    <div className="rounded-xl border border-dashed border-[#002454]/20 bg-[#f8fcfe] p-4 text-center">
+                      <span className="text-sm font-medium italic text-[#002454]/40">No preferences submitted</span>
+                    </div>
+                  )}
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       )}

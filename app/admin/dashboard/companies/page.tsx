@@ -191,8 +191,9 @@ export default function CompaniesPage() {
       </div>
 
       <div className="overflow-hidden rounded-2xl border border-[#002454]/10 bg-white shadow-sm">
-        <table className="w-full text-left text-sm">
-          <thead className="border-b border-[#002454]/5 bg-[#f8fcfe] text-[#002454]/60">
+        <div style={{ maxHeight: 'calc(100vh - 280px)' }} className="overflow-auto w-full">
+          <table className="w-full text-left text-sm relative">
+            <thead className="sticky top-0 z-10 bg-[#f8fcfe] text-[#002454]/60 shadow-[0_1px_0_0_rgba(0,36,84,0.05)]">
             <tr>
               <th className="px-6 py-4 font-bold">Company</th>
               <th className="px-6 py-4 font-bold">Added On</th>
@@ -257,6 +258,7 @@ export default function CompaniesPage() {
             )}
           </tbody>
         </table>
+        </div>
       </div>
 
       {isModalOpen && (

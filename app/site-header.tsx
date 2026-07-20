@@ -4,7 +4,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { ChevronDown, LayoutDashboard, LogOut, Menu, UserRound, X } from "lucide-react";
 import { signOut, useSession } from "next-auth/react";
-import { usePathname } from "next/navigation";
+import { usePathname, useSearchParams, useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import SignInModal from "./sign-in-modal";
 
@@ -25,7 +25,18 @@ export default function SiteHeader() {
   const userMenuRef = useRef<HTMLDivElement>(null);
   const { data: session, status } = useSession();
   const pathname = usePathname();
+  const searchParams = useSearchParams();
+  const router = useRouter();
   const isHomePage = pathname === "/";
+
+  useEffect(() => {
+    if (searchParams.get("login") === "true") {
+      setIsSignInOpen(true);
+      // Clean up the URL parameter without triggering a page reload
+      const newUrl = window.location.pathname;
+      window.history.replaceState({}, document.title, newUrl);
+    }
+  }, [searchParams]);
 
   const resolveHref = (href: string) => {
     if (!href.startsWith("#")) return href;
