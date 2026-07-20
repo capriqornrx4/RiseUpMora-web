@@ -13,19 +13,10 @@ export const departmentsByFaculty = {
   ],
   "Faculty of Information Technology": [
     "Department of Information Technology",
+    "Department of Artificial Intelligence",
+    "Department of Information Technology & Management",
   ],
-  "Faculty of Business": [
-    "Department of Decision Sciences",
-    "Department of Industrial Management",
-    "Department of Management of Technology",
-  ],
-  "Faculty of Architecture": [
-    "Department of Architecture",
-    "Department of Building Economics",
-    "Department of Town & Country Planning",
-    "Department of Integrated Design",
-    "Department of Facilities Management",
-  ],
+
 } as const;
 
 export type Faculty = keyof typeof departmentsByFaculty;
