@@ -40,7 +40,7 @@ const events: readonly TimelineEvent[] = [
     title: "Mastering the Art of Acing Interviews",
   },
   {
-    dateLabel: "date to be decided",
+    dateLabel: "06 August",
     type: "Other event",
     title: "Internship and Mock Interview Fair",
   },
