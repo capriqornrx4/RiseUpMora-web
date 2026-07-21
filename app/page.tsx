@@ -18,6 +18,7 @@ import ieeeSbWhiteLogo from "../assets/UOM IEEE SB LOGO - WHITE.png";
 import AboutStory from "./about-story";
 import EventTimeline from "./event-timeline";
 import Preloader from "./preloader";
+import RegistrationComingSoonButton from "./registration-coming-soon-button";
 import RotatingHeadline from "./rotating-headline";
 import SiteBackground from "./site-background";
 import SiteHeader from "./site-header";
@@ -57,6 +58,28 @@ const partnershipTiers = [
       "Digital promotion support",
     ],
   },
+  {
+  name: "Bronze Partner",
+  label: "Brand Visibility",
+  description:
+    "Increase your brand presence by engaging with aspiring professionals through event-wide recognition and promotional opportunities.",
+  benefits: [
+    "Logo on event promotional materials",
+    "Recognition on social media platforms",
+    "Brand visibility during the event",
+  ],
+},
+{
+  name: "Stall Partner",
+  label: "Direct Engagement",
+  description:
+    "Connect directly with students through an on-site exhibition stall, showcasing your brand, products, services, and career opportunities.",
+  benefits: [
+    "Dedicated exhibition stall",
+    "Direct interaction with attendees",
+    "Opportunity to distribute promotional materials",
+  ],
+}
 ] as const;
 
 const galleryCards = [
@@ -89,17 +112,16 @@ const chairPersons = [
     image: chairPersonTwo,
   },
   {
-    name: "Thamalu Bambaravange",
+    name: "Thamalu Bambaravanage",
     role: "Event Vice Chairperson",
     image: chairPersonThree,
   },
 ] as const;
 
 const footerSocialLinks = [
-  { label: "Facebook", shortLabel: "Fb", href: "https://www.facebook.com/IEEEUOM" },
-  { label: "LinkedIn", shortLabel: "In", href: "https://www.linkedin.com/company/ieeeuom" },
-  { label: "Instagram", shortLabel: "Ig", href: "https://www.instagram.com/ieeeuom" },
-  { label: "IEEE UoM", shortLabel: "Web", href: "https://ieee.uom.lk/" },
+  { label: "Facebook", shortLabel: "Fb", href: "https://www.facebook.com/ieeesbuom" },
+  { label: "LinkedIn", shortLabel: "In", href: "https://www.linkedin.com/company/ieeesbuom/" },
+  { label: "IEEE SB UoM", shortLabel: "Web", href: "https://ieeesb.uom.lk/" },
 ] as const;
 
 const footerQuickLinks = [
