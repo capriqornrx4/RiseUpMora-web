@@ -23,8 +23,9 @@ export async function GET(req: Request) {
         SELECT u.id as user_id, u.name, u.email, c.student_id, c.faculty, c.department, c.contact_number,
                c.cv_url, c.pref_1, c.pref_2, c.pref_3, c.pref_4
         FROM users u 
-        JOIN candidates c ON u.id = c.user_id 
-        ORDER BY c.created_at DESC
+        LEFT JOIN candidates c ON u.id = c.user_id 
+        WHERE u.role = 'candidate'
+        ORDER BY COALESCE(c.created_at, u.created_at) DESC
       `;
     } else if (role === "company_coordinator") {
       sql = `

@@ -3200,6 +3200,7 @@ html {
   }
 
   .partner-tier-card {
+    grid-column: 1 / -1 !important;
     min-height: auto;
   }
 
