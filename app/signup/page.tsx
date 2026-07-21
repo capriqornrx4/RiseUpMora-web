@@ -15,7 +15,8 @@ import {
   UserRound,
   X,
 } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { createPortal } from "react-dom";
 import {
   departmentsByFaculty,
   faculties,
@@ -31,6 +32,9 @@ export default function SignupPage() {
   const [selectedFaculty, setSelectedFaculty] = useState<Faculty | "">("");
   const [selectedDepartment, setSelectedDepartment] = useState("");
   const [studentId, setStudentId] = useState("");
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => { setMounted(true); }, []);
 
   const departmentOptions = selectedFaculty ? departmentsByFaculty[selectedFaculty] : [];
 
@@ -116,7 +120,7 @@ export default function SignupPage() {
               <h2>Reserve your place</h2>
             </div>
 
-            {submitted && (
+            {mounted && submitted && createPortal(
               <div className="signup-modal-overlay" role="dialog" aria-modal="true" aria-labelledby="signup-modal-title">
                 <div className="signup-modal">
                   <button
@@ -158,7 +162,8 @@ export default function SignupPage() {
                     Got it
                   </button>
                 </div>
-              </div>
+              </div>,
+              document.body
             )}
 
             {error && (

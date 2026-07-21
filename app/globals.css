@@ -2819,6 +2819,7 @@ html {
 
 .signup-field select {
   appearance: none;
+  padding-right: 1.5rem;
 }
 
 .signup-field--select {
@@ -2826,13 +2827,16 @@ html {
 }
 
 .signup-field--select::after {
+  position: absolute;
+  right: 0.9rem;
+  top: 50%;
   width: 0.45rem;
   height: 0.45rem;
   border-right: 2px solid rgb(0 36 84 / 48%);
   border-bottom: 2px solid rgb(0 36 84 / 48%);
   content: "";
   pointer-events: none;
-  transform: rotate(45deg) translateY(-0.1rem);
+  transform: translateY(-65%) rotate(45deg);
 }
 
 .signup-success {
@@ -2879,9 +2883,11 @@ html {
   z-index: 9999;
   display: grid;
   place-items: center;
+  padding: 1rem env(safe-area-inset-right, 1rem) 1rem env(safe-area-inset-left, 1rem);
   background: rgb(0 18 42 / 52%);
   backdrop-filter: blur(6px);
   animation: signup-modal-fadein 260ms ease;
+  overflow-y: auto;
 }
 
 .signup-modal {
@@ -2898,6 +2904,21 @@ html {
     0 0 0 1px rgb(255 255 255 / 38%) inset;
   text-align: center;
   animation: signup-modal-pop 340ms cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+@media (max-width: 400px) {
+  .signup-modal {
+    width: 94vw;
+    padding: 1.8rem 1.25rem 1.4rem;
+  }
+
+  .signup-modal__title {
+    font-size: 1.15rem;
+  }
+
+  .signup-modal__dismiss {
+    width: 100%;
+  }
 }
 
 .signup-modal__close {
