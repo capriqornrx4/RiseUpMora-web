@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Building2, Plus, Pencil, Trash2, Loader2, Image as ImageIcon } from "lucide-react";
+import { Building2, Plus, Pencil, Trash2, Loader2, Image as ImageIcon, Search, X } from "lucide-react";
 import Image from "next/image";
 
 type Company = {
@@ -22,6 +22,11 @@ export default function CompaniesPage() {
   const [name, setName] = useState("");
   const [logoFile, setLogoFile] = useState<File | null>(null);
   const [logoPreview, setLogoPreview] = useState<string | null>(null);
+  const [searchQuery, setSearchQuery] = useState("");
+
+  const filteredCompanies = companies.filter((c) =>
+    c.name.toLowerCase().includes(searchQuery.toLowerCase().trim())
+  );
 
   useEffect(() => {
     fetchCompanies();
@@ -160,6 +165,31 @@ export default function CompaniesPage() {
         </button>
       </div>
 
+      {/* Search bar */}
+      <div className="relative">
+        <Search
+          size={17}
+          className="absolute left-3.5 top-1/2 -translate-y-1/2 text-[#002454]/40 pointer-events-none"
+        />
+        <input
+          type="text"
+          placeholder="Search companies…"
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+          className="w-full rounded-xl border border-[#002454]/10 bg-white py-2.5 pl-10 pr-10 text-sm text-[#002454] outline-none transition-all focus:border-[#33aeda] focus:ring-2 focus:ring-[#33aeda]/10"
+        />
+        {searchQuery && (
+          <button
+            type="button"
+            onClick={() => setSearchQuery("")}
+            className="absolute right-3 top-1/2 -translate-y-1/2 rounded-full p-0.5 text-[#002454]/40 hover:text-[#002454]/70"
+            aria-label="Clear search"
+          >
+            <X size={15} />
+          </button>
+        )}
+      </div>
+
       <div className="overflow-hidden rounded-2xl border border-[#002454]/10 bg-white shadow-sm">
         <table className="w-full text-left text-sm">
           <thead className="border-b border-[#002454]/5 bg-[#f8fcfe] text-[#002454]/60">
@@ -176,14 +206,16 @@ export default function CompaniesPage() {
                   <Loader2 className="mx-auto animate-spin" />
                 </td>
               </tr>
-            ) : companies.length === 0 ? (
+            ) : filteredCompanies.length === 0 ? (
               <tr>
                 <td colSpan={3} className="px-6 py-8 text-center text-[#002454]/50">
-                  No companies found. Add one to get started.
+                  {searchQuery
+                    ? `No companies match "${searchQuery}".`
+                    : "No companies found. Add one to get started."}
                 </td>
               </tr>
             ) : (
-              companies.map((company) => (
+              filteredCompanies.map((company) => (
                 <tr key={company.id} className="transition-colors hover:bg-[#f8fcfe]/50">
                   <td className="px-6 py-4">
                     <div className="flex items-center gap-4">

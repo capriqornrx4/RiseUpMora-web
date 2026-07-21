@@ -1,0 +1,6 @@
+BEGIN;
+
+ALTER TABLE candidates
+    DROP COLUMN IF EXISTS degree;
+
+COMMIT;

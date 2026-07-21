@@ -46,7 +46,6 @@ CREATE TABLE candidates (
     student_id VARCHAR(100) UNIQUE,
     faculty VARCHAR(255) NOT NULL,
     department VARCHAR(255) NOT NULL,
-    degree VARCHAR(255) NOT NULL,
     contact_number VARCHAR(20) NOT NULL,
     cv_url TEXT,
     profile_image_url TEXT,
@@ -55,6 +54,7 @@ CREATE TABLE candidates (
     pref_2 VARCHAR(255),
     pref_3 VARCHAR(255),
     pref_4 VARCHAR(255),
+    application_comment TEXT,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 

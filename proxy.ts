@@ -33,9 +33,23 @@ export async function proxy(req: NextRequest) {
     }
   }
 
+  // Protect /company routes
+  if (pathname.startsWith("/company")) {
+    if (!token || token.role !== "company_coordinator") {
+      return NextResponse.redirect(new URL("/", req.url));
+    }
+  }
+
+  // Protect /panelist routes
+  if (pathname.startsWith("/panelist")) {
+    if (!token || token.role !== "panelist") {
+      return NextResponse.redirect(new URL("/", req.url));
+    }
+  }
+
   return NextResponse.next();
 }
 
 export const config = {
-  matcher: ["/admin/:path*"],
+  matcher: ["/admin/:path*", "/company/:path*", "/panelist/:path*"],
 };

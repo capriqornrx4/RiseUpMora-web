@@ -22,6 +22,7 @@ import RegistrationComingSoonButton from "./registration-coming-soon-button";
 import RotatingHeadline from "./rotating-headline";
 import SiteBackground from "./site-background";
 import SiteHeader from "./site-header";
+import HeroCandidateAction from "./hero-candidate-action";
 
 const partnershipTiers = [
   {
@@ -166,9 +167,7 @@ export default function Home() {
               expert-led webinars and workshops.
             </p>
             <div className="hero-actions">
-              <RegistrationComingSoonButton className="hero-primary">
-                Sign Up
-              </RegistrationComingSoonButton>
+              <HeroCandidateAction />
               <a className="hero-secondary" href="#timeline">
                 View timeline
               </a>

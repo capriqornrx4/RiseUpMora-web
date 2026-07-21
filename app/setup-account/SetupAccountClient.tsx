@@ -53,7 +53,7 @@ export default function SetupAccountClient() {
       if (data.success) {
         setSuccess(true);
         setTimeout(() => {
-          router.push("/login");
+          router.push("/");
         }, 3000);
       } else {
         setError(data.error || "Failed to setup account");
