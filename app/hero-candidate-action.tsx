@@ -10,7 +10,7 @@ export default function HeroCandidateAction() {
   if (status !== "authenticated" || session.user.role !== "candidate") {
     return (
       <Link className="hero-primary" href="/signup" prefetch>
-        Sign Up
+        Register Now
       </Link>
     );
   }

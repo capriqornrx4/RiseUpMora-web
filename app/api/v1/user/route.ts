@@ -20,27 +20,28 @@ export async function GET(req: Request) {
     let sql = "";
     if (role === "candidate") {
       sql = `
-        SELECT u.id as user_id, u.name, u.email, c.student_id, c.faculty, c.department, c.contact_number
+        SELECT u.id as user_id, u.name, u.email, c.student_id, c.faculty, c.department, c.contact_number,
+               c.cv_url, c.pref_1, c.pref_2, c.pref_3, c.pref_4
         FROM users u 
         JOIN candidates c ON u.id = c.user_id 
         ORDER BY c.created_at DESC
       `;
     } else if (role === "company_coordinator") {
       sql = `
-        SELECT u.id as user_id, u.name, u.email, c.name as company_name 
+        SELECT u.id as user_id, u.name, u.email, u.email_verified_at, c.name as company_name 
         FROM users u 
         JOIN company_coordinators cc ON u.id = cc.user_id 
         JOIN companies c ON cc.company_id = c.id
       `;
     } else if (role === "department_coordinator") {
       sql = `
-        SELECT u.id as user_id, u.name, u.email, dc.department 
+        SELECT u.id as user_id, u.name, u.email, u.email_verified_at, dc.department 
         FROM users u 
         JOIN department_coordinators dc ON u.id = dc.user_id
       `;
     } else if (role === "panelist") {
       sql = `
-        SELECT u.id as user_id, u.name, u.email, p.panel_number, c.name as company_name 
+        SELECT u.id as user_id, u.name, u.email, u.email_verified_at, p.panel_number, c.name as company_name 
         FROM users u 
         JOIN panelists p ON u.id = p.user_id 
         JOIN companies c ON p.company_id = c.id
