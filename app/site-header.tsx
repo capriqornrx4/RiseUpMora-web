@@ -5,7 +5,7 @@ import Link from "next/link";
 import { ChevronDown, LayoutDashboard, LogOut, Menu, UserRound, X } from "lucide-react";
 import { signOut, useSession } from "next-auth/react";
 import { usePathname, useSearchParams, useRouter } from "next/navigation";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, Suspense } from "react";
 import SignInModal from "./sign-in-modal";
 
 const navigation = [
@@ -17,7 +17,7 @@ const navigation = [
   { label: "Contact", href: "#contact" },
 ];
 
-export default function SiteHeader() {
+function SiteHeaderContent() {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isSignInOpen, setIsSignInOpen] = useState(false);
@@ -217,5 +217,13 @@ export default function SiteHeader() {
 
       <SignInModal isOpen={isSignInOpen} onClose={() => setIsSignInOpen(false)} />
     </>
+  );
+}
+
+export default function SiteHeader() {
+  return (
+    <Suspense fallback={null}>
+      <SiteHeaderContent />
+    </Suspense>
   );
 }

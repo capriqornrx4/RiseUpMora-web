@@ -1,11 +1,11 @@
 "use client";
 
-import { useState } from "react";
+import { useState, Suspense } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import { Loader2, CheckCircle2, Eye, EyeOff, ShieldCheck, AlertTriangle } from "lucide-react";
 import SiteBackground from "../site-background";
 
-export default function SetupAccountClient() {
+function SetupAccountClientContent() {
   const searchParams = useSearchParams();
   const token = searchParams.get("token");
   const router = useRouter();
@@ -191,5 +191,13 @@ export default function SetupAccountClient() {
         </div>
       </main>
     </div>
+  );
+}
+
+export default function SetupAccountClient() {
+  return (
+    <Suspense fallback={null}>
+      <SetupAccountClientContent />
+    </Suspense>
   );
 }
