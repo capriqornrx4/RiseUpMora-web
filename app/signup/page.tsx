@@ -10,8 +10,10 @@ import {
   GraduationCap,
   Loader2,
   Mail,
+  MailCheck,
   Phone,
   UserRound,
+  X,
 } from "lucide-react";
 import { useState } from "react";
 import {
@@ -115,9 +117,47 @@ export default function SignupPage() {
             </div>
 
             {submitted && (
-              <div className="signup-success" role="status">
-                <CheckCircle2 size={18} aria-hidden="true" />
-                Check your email to verify your address and set your password.
+              <div className="signup-modal-overlay" role="dialog" aria-modal="true" aria-labelledby="signup-modal-title">
+                <div className="signup-modal">
+                  <button
+                    className="signup-modal__close"
+                    type="button"
+                    aria-label="Close"
+                    onClick={() => setSubmitted(false)}
+                  >
+                    <X size={20} />
+                  </button>
+
+                  <div className="signup-modal__icon">
+                    <MailCheck size={32} aria-hidden="true" />
+                  </div>
+
+                  <h3 id="signup-modal-title" className="signup-modal__title">
+                    Check your email
+                  </h3>
+
+                  <p className="signup-modal__body">
+                    We&apos;ve sent a verification link to your email address.
+                    Please click the link to verify your account and set your
+                    password.
+                  </p>
+
+                  <div className="signup-modal__spam-note">
+                    <AlertCircle size={16} aria-hidden="true" />
+                    <span>
+                      Can&apos;t find the email? Check your{" "}
+                      <strong>Spam</strong> or <strong>Junk</strong> folder.
+                    </span>
+                  </div>
+
+                  <button
+                    className="signup-modal__dismiss"
+                    type="button"
+                    onClick={() => setSubmitted(false)}
+                  >
+                    Got it
+                  </button>
+                </div>
               </div>
             )}
 

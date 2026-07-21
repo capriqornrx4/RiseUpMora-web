@@ -2851,6 +2851,162 @@ html {
   line-height: 1.4;
 }
 
+/* ── Signup success modal ────────────────────────────────── */
+
+@keyframes signup-modal-fadein {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes signup-modal-pop {
+  from {
+    opacity: 0;
+    transform: scale(0.88) translateY(1.2rem);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+.signup-modal-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  display: grid;
+  place-items: center;
+  background: rgb(0 18 42 / 52%);
+  backdrop-filter: blur(6px);
+  animation: signup-modal-fadein 260ms ease;
+}
+
+.signup-modal {
+  position: relative;
+  width: min(92vw, 26rem);
+  border: 1px solid rgb(51 174 218 / 18%);
+  border-radius: 1rem;
+  padding: 2.2rem 1.8rem 1.8rem;
+  background:
+    radial-gradient(circle at 50% 0%, rgb(51 174 218 / 8%), transparent 14rem),
+    #ffffff;
+  box-shadow:
+    0 1.5rem 4rem rgb(0 36 84 / 18%),
+    0 0 0 1px rgb(255 255 255 / 38%) inset;
+  text-align: center;
+  animation: signup-modal-pop 340ms cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.signup-modal__close {
+  position: absolute;
+  top: 0.85rem;
+  right: 0.85rem;
+  display: grid;
+  width: 2rem;
+  height: 2rem;
+  border: 1px solid rgb(0 36 84 / 10%);
+  border-radius: 50%;
+  place-items: center;
+  background: rgb(0 36 84 / 4%);
+  color: rgb(0 36 84 / 52%);
+  cursor: pointer;
+  font: inherit;
+  transition:
+    background 160ms ease,
+    color 160ms ease,
+    border-color 160ms ease;
+}
+
+.signup-modal__close:hover,
+.signup-modal__close:focus-visible {
+  border-color: rgb(0 36 84 / 18%);
+  background: rgb(0 36 84 / 8%);
+  color: #002454;
+}
+
+.signup-modal__icon {
+  display: inline-grid;
+  width: 3.8rem;
+  height: 3.8rem;
+  margin: 0 auto 1rem;
+  border-radius: 50%;
+  place-items: center;
+  background: linear-gradient(135deg, rgb(51 174 218 / 16%), rgb(22 136 178 / 22%));
+  color: #1688b2;
+}
+
+.signup-modal__title {
+  margin: 0 0 0.55rem;
+  color: #002454;
+  font-size: 1.35rem;
+  font-weight: 800;
+  letter-spacing: 0;
+  line-height: 1.2;
+}
+
+.signup-modal__body {
+  margin: 0 0 1.1rem;
+  color: rgb(0 36 84 / 64%);
+  font-size: 0.9rem;
+  font-weight: 500;
+  line-height: 1.65;
+}
+
+.signup-modal__spam-note {
+  display: flex;
+  margin: 0 auto 1.35rem;
+  border: 1px solid rgb(212 148 0 / 22%);
+  border-radius: 0.6rem;
+  padding: 0.65rem 0.85rem;
+  align-items: flex-start;
+  gap: 0.55rem;
+  background: rgb(246 196 48 / 9%);
+  color: rgb(142 90 0 / 88%);
+  font-size: 0.8rem;
+  font-weight: 600;
+  line-height: 1.5;
+  text-align: left;
+}
+
+.signup-modal__spam-note svg {
+  flex-shrink: 0;
+  margin-top: 0.15rem;
+  color: #d49400;
+}
+
+.signup-modal__spam-note strong {
+  font-weight: 800;
+}
+
+.signup-modal__dismiss {
+  display: inline-flex;
+  min-height: 2.85rem;
+  border: 1px solid rgb(51 174 218 / 42%);
+  border-radius: 999px;
+  padding-inline: 2.4rem;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #33aeda, #1688b2);
+  box-shadow: 0 0.6rem 1.6rem rgb(51 174 218 / 22%);
+  color: #ffffff;
+  cursor: pointer;
+  font: inherit;
+  font-size: 0.88rem;
+  font-weight: 800;
+  transition:
+    box-shadow 180ms ease,
+    transform 180ms ease;
+}
+
+.signup-modal__dismiss:hover,
+.signup-modal__dismiss:focus-visible {
+  box-shadow: 0 0.8rem 2.2rem rgb(51 174 218 / 36%);
+  transform: translateY(-2px);
+}
+
 .signup-error {
   display: flex;
   min-height: 2.6rem;
