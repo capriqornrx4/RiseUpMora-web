@@ -2323,6 +2323,88 @@ html {
   box-shadow: 0 0 0 3px rgb(51 174 218 / 14%);
 }
 
+/* Field input wrapper with inline icon */
+.field-input-wrap {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.field-input-wrap input {
+  flex: 1;
+  padding-right: 2.6rem !important;
+}
+
+.field-input-wrap input:not([readonly]):focus {
+  border-color: rgb(51 174 218 / 76%);
+  background: #ffffff;
+  box-shadow: 0 0 0 3px rgb(51 174 218 / 14%);
+  outline: 0;
+}
+
+.field-icon-btn {
+  position: absolute;
+  right: 0.65rem;
+  display: flex;
+  width: 1.65rem;
+  height: 1.65rem;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  border-radius: 0.35rem;
+  transition: background 140ms ease, color 140ms ease, transform 140ms ease;
+}
+
+/* Pencil button — click to enter edit mode */
+.field-icon-btn--edit {
+  color: rgb(0 36 84 / 32%);
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  transition: background 140ms ease, color 140ms ease;
+}
+
+.field-icon-btn--edit:hover:not(:disabled) {
+  background: rgb(0 36 84 / 7%);
+  color: rgb(0 36 84 / 65%);
+}
+
+.field-icon-btn--edit:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+/* Lock on email — not editable */
+.field-icon-btn--locked {
+  color: rgb(0 36 84 / 22%);
+  pointer-events: none;
+}
+
+/* Save button — field has unsaved changes */
+.field-icon-btn--save {
+  border: 1px solid rgb(16 185 129 / 30%);
+  background: rgb(16 185 129 / 10%);
+  color: #0d9373;
+  cursor: pointer;
+  animation: field-btn-pop 180ms cubic-bezier(0.34, 1.56, 0.64, 1) both;
+}
+
+.field-icon-btn--save:hover:not(:disabled) {
+  background: rgb(16 185 129 / 18%);
+  color: #047857;
+  transform: scale(1.08);
+}
+
+.field-icon-btn--save:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+@keyframes field-btn-pop {
+  from { opacity: 0; transform: scale(0.7); }
+  to   { opacity: 1; transform: scale(1); }
+}
+
 .application-dropzone {
   position: relative;
   display: grid;
@@ -3595,6 +3677,23 @@ html {
     margin: 0 1.25rem 1.25rem;
   }
 
+  .dashboard-cv-card {
+    padding: 1rem;
+  }
+
+  .dashboard-cv-actions {
+    width: 100%;
+  }
+
+  .dashboard-cv-btn {
+    flex: 1 1 0;
+    justify-content: center;
+  }
+
+  .dashboard-save-success {
+    margin-inline: 1.25rem;
+  }
+
   .complete-profile-main {
     width: min(100% - 2rem, 76rem);
     min-height: calc(100vh - 5.5rem);
@@ -4033,6 +4132,143 @@ html {
 
   .preloader__progress span {
     transform: scaleX(1);
+  }
+}
+
+/* Candidate Dashboard — CV Card & Actions */
+.dashboard-cv-card {
+  display: flex;
+  min-height: 5.5rem;
+  border: 1px solid rgb(0 36 84 / 10%);
+  border-radius: 0.5rem;
+  padding: 1.25rem 1.5rem;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 1.25rem;
+  background: #f8fcfe;
+  transition: border-color 180ms ease, box-shadow 180ms ease;
+}
+
+.dashboard-cv-card:hover {
+  border-color: rgb(51 174 218 / 32%);
+  box-shadow: 0 0.35rem 1.2rem rgb(0 36 84 / 5%);
+}
+
+.dashboard-cv-card--empty {
+  border-style: dashed;
+  border-color: rgb(22 136 178 / 36%);
+  background: rgb(51 174 218 / 5%);
+  color: #1688b2;
+}
+
+.dashboard-cv-info {
+  display: flex;
+  flex: 1 1 auto;
+  min-width: 0;
+  align-items: center;
+  gap: 1rem;
+  color: #1688b2;
+}
+
+.dashboard-cv-info > div {
+  display: grid;
+  min-width: 0;
+  gap: 0.2rem;
+}
+
+.dashboard-cv-info strong,
+.dashboard-cv-card--empty strong {
+  overflow: hidden;
+  color: #002454;
+  font-size: 0.9rem;
+  font-weight: 800;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.dashboard-cv-info span,
+.dashboard-cv-card--empty > div > span {
+  color: rgb(0 36 84 / 55%);
+  font-size: 0.76rem;
+  font-weight: 650;
+}
+
+.dashboard-cv-card--empty > svg {
+  flex: 0 0 auto;
+}
+
+.dashboard-cv-card--empty > div {
+  display: grid;
+  flex: 1 1 auto;
+  min-width: 0;
+  gap: 0.2rem;
+}
+
+.dashboard-cv-actions {
+  display: flex;
+  flex: 0 0 auto;
+  flex-wrap: wrap;
+  gap: 0.65rem;
+}
+
+.dashboard-cv-btn {
+  display: inline-flex;
+  min-height: 2.55rem;
+  border: 1px solid rgb(0 36 84 / 14%);
+  border-radius: 0.5rem;
+  padding-inline: 1rem;
+  align-items: center;
+  gap: 0.45rem;
+  cursor: pointer;
+  font: inherit;
+  font-size: 0.78rem;
+  font-weight: 800;
+  text-decoration: none;
+  transition: transform 180ms ease, box-shadow 180ms ease, background 180ms ease;
+}
+
+.dashboard-cv-btn:hover,
+.dashboard-cv-btn:focus-visible {
+  transform: translateY(-1px);
+  box-shadow: 0 0.35rem 1rem rgb(0 36 84 / 8%);
+}
+
+.dashboard-cv-btn--view {
+  background: #ffffff;
+  color: #002454;
+}
+
+.dashboard-cv-btn--replace {
+  border-color: #1688b2;
+  background: rgb(51 174 218 / 10%);
+  color: #1688b2;
+}
+
+.dashboard-cv-btn--replace:hover,
+.dashboard-cv-btn--replace:focus-visible {
+  background: rgb(51 174 218 / 18%);
+  box-shadow: 0 0.35rem 1rem rgb(51 174 218 / 14%);
+}
+
+.dashboard-save-success {
+  display: flex;
+  margin: 0 2rem 1rem;
+  border: 1px solid rgb(22 163 74 / 22%);
+  border-radius: 0.5rem;
+  padding: 0.75rem 1rem;
+  align-items: center;
+  gap: 0.55rem;
+  background: #dcfce7;
+  color: #15803d;
+  font-size: 0.82rem;
+  font-weight: 750;
+  animation: dashboard-success-in 280ms ease both;
+}
+
+@keyframes dashboard-success-in {
+  from {
+    opacity: 0;
+    transform: translateY(0.35rem);
   }
 }
 
