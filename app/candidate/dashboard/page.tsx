@@ -89,7 +89,7 @@ export default function CandidateDashboardPage() {
   const facultyRef = useRef<HTMLInputElement>(null);
   const departmentRef = useRef<HTMLInputElement>(null);
 
-  const fieldRefs: Record<FieldKey, React.RefObject<HTMLInputElement>> = {
+  const fieldRefs: Record<FieldKey, any> = {
     name: nameRef,
     phone: phoneRef,
     studentId: studentIdRef,
