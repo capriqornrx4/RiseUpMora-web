@@ -20,11 +20,6 @@ const events: readonly TimelineEvent[] = [
     title: "Registration",
   },
   {
-    dateLabel: "06 August",
-    type: "Session",
-    title: "Mock Interview Session",
-  },
-  {
     dateLabel: "25 July",
     type: "Workshop",
     title: "LinkedIn Profile Creation & Maintenance",
