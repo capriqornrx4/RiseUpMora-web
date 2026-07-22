@@ -6,13 +6,20 @@ import {
   ExternalLink,
   FileText,
   Loader2,
+  Lock,
+  Pencil,
   RefreshCw,
   Save,
 } from "lucide-react";
 import { useSession } from "next-auth/react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
+import {
+  departmentsByFaculty,
+  faculties,
+  type Faculty,
+} from "@/lib/candidate-options";
 import SiteBackground from "../../site-background";
 import SiteHeader from "../../site-header";
 
@@ -33,6 +40,8 @@ type Company = {
   name: string;
 };
 
+type FieldKey = "name" | "phone" | "studentId" | "faculty" | "department";
+
 export default function CandidateDashboardPage() {
   const router = useRouter();
   const { status } = useSession();
@@ -40,10 +49,53 @@ export default function CandidateDashboardPage() {
   const [companies, setCompanies] = useState<Company[]>([]);
   const [preferences, setPreferences] = useState(["", "", "", ""]);
   const [comment, setComment] = useState("");
+
+  // Committed (saved) values — what the server has
+  const [savedName, setSavedName] = useState("");
+  const [savedPhone, setSavedPhone] = useState("");
+  const [savedStudentId, setSavedStudentId] = useState("");
+  const [savedFaculty, setSavedFaculty] = useState("");
+  const [savedDepartment, setSavedDepartment] = useState("");
+
+  // In-progress edit values — only used while that field is in edit mode
+  const [editName, setEditName] = useState("");
+  const [editPhone, setEditPhone] = useState("");
+  const [editStudentId, setEditStudentId] = useState("");
+  const [editFaculty, setEditFaculty] = useState("");
+  const [editDepartment, setEditDepartment] = useState("");
+
+  // Which fields are currently in edit mode
+  const [editingFields, setEditingFields] = useState<Set<FieldKey>>(new Set());
+  const [fieldSaving, setFieldSaving] = useState<FieldKey | null>(null);
+
+  // Uniqueness conflict messages for phone & studentId
+  const [fieldConflict, setFieldConflict] = useState<Partial<Record<"phone" | "studentId", string>>>({});
+  // Individual field success messages
+  const [fieldSuccess, setFieldSuccess] = useState<Partial<Record<FieldKey, string>>>({});
+  // Which fields are currently being checked (spinner feedback)
+  const [fieldChecking, setFieldChecking] = useState<Partial<Record<"phone" | "studentId", boolean>>>({});
+  // Debounce timer refs
+  const checkTimers = useRef<Partial<Record<"phone" | "studentId", ReturnType<typeof setTimeout>>>>({});
+
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
   const [error, setError] = useState("");
   const [saveSuccess, setSaveSuccess] = useState(false);
+
+  // Refs for auto-focusing inputs when edit mode activates
+  const nameRef = useRef<HTMLInputElement>(null);
+  const phoneRef = useRef<HTMLInputElement>(null);
+  const studentIdRef = useRef<HTMLInputElement>(null);
+  const facultyRef = useRef<HTMLInputElement>(null);
+  const departmentRef = useRef<HTMLInputElement>(null);
+
+  const fieldRefs: Record<FieldKey, React.RefObject<HTMLInputElement>> = {
+    name: nameRef,
+    phone: phoneRef,
+    studentId: studentIdRef,
+    faculty: facultyRef,
+    department: departmentRef,
+  };
 
   useEffect(() => {
     if (status === "loading") return;
@@ -79,6 +131,17 @@ export default function CandidateDashboardPage() {
           ),
         );
         setComment(data.candidate.comment);
+        // Initialise both saved and edit values from the fetched data
+        setSavedName(data.candidate.name);
+        setSavedPhone(data.candidate.phone);
+        setSavedStudentId(data.candidate.studentId);
+        setSavedFaculty(data.candidate.faculty);
+        setSavedDepartment(data.candidate.department);
+        setEditName(data.candidate.name);
+        setEditPhone(data.candidate.phone);
+        setEditStudentId(data.candidate.studentId);
+        setEditFaculty(data.candidate.faculty);
+        setEditDepartment(data.candidate.department);
         setIsLoading(false);
       })
       .catch((requestError: unknown) => {
@@ -114,11 +177,138 @@ export default function CandidateDashboardPage() {
     }
   };
 
+  /** Debounced uniqueness check for phone / studentId. */
+  const checkFieldUniqueness = (field: "phone" | "studentId", value: string) => {
+    // Clear any pending timer
+    if (checkTimers.current[field]) clearTimeout(checkTimers.current[field]);
+    // Clear previous conflict immediately
+    setFieldConflict((prev) => ({ ...prev, [field]: undefined }));
+
+    const trimmed = value.trim();
+    if (!trimmed) return; // empty is fine
+    
+    // Don't check uniqueness if format is clearly wrong
+    if (field === "phone" && trimmed.length !== 10) return;
+    if (field === "studentId" && !/^\d{6}[A-Z]$/.test(trimmed)) return;
+
+    setFieldChecking((prev) => ({ ...prev, [field]: true }));
+    checkTimers.current[field] = setTimeout(async () => {
+      try {
+        const res = await fetch(
+          `/api/v1/candidate/check-field?field=${field}&value=${encodeURIComponent(trimmed)}`,
+        );
+        const data = (await res.json()) as { available?: boolean; error?: string };
+        if (!data.available) {
+          const label = field === "phone" ? "phone number" : "university ID";
+          setFieldConflict((prev) => ({
+            ...prev,
+            [field]: `This ${label} is already linked to another account.`,
+          }));
+        }
+      } catch {
+        // Silently ignore network errors during check
+      } finally {
+        setFieldChecking((prev) => ({ ...prev, [field]: false }));
+      }
+    }, 500);
+  };
+
+  /** Enter edit mode for a field: reset in-progress value and focus the input. */
+  const startEditing = (field: FieldKey) => {
+    // Reset the in-progress value to the last committed value
+    if (field === "name") setEditName(savedName);
+    if (field === "phone") setEditPhone(savedPhone);
+    if (field === "studentId") setEditStudentId(savedStudentId);
+    if (field === "faculty") setEditFaculty(savedFaculty);
+    if (field === "department") setEditDepartment(savedDepartment);
+
+    setEditingFields((prev) => new Set([...prev, field]));
+    setSaveSuccess(false);
+    setFieldSuccess((prev) => ({ ...prev, [field]: undefined }));
+
+    // Focus the input after the next render
+    setTimeout(() => fieldRefs[field].current?.focus(), 0);
+  };
+
+  /** Save a single profile field and exit edit mode. */
+  const saveField = async (field: FieldKey, value: string) => {
+    const trimmed = value.trim();
+    if (field === "phone" && trimmed.length !== 10) return;
+    if (field === "studentId" && !/^\d{6}[A-Z]$/.test(trimmed)) return;
+    if ((field === "phone" || field === "studentId") && fieldConflict[field]) return;
+
+    setFieldSaving(field);
+    setError("");
+    try {
+      const body: Record<string, string> = {
+        [field]: value,
+      };
+
+      if (field === "faculty") {
+        body.department = editingFields.has("department") ? editDepartment : savedDepartment;
+      } else if (field === "department") {
+        body.faculty = editingFields.has("faculty") ? editFaculty : savedFaculty;
+      }
+
+      const response = await fetch("/api/v1/candidate/dashboard/profile", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(body),
+      });
+      const data = (await response.json()) as { success?: boolean; error?: string };
+      if (!response.ok || !data.success) {
+        setError(data.error || "Unable to save field.");
+        return;
+      }
+      // Commit to saved snapshot and exit edit mode
+      if (field === "name") { setSavedName(value); setCandidate((p) => p ? { ...p, name: value } : p); }
+      if (field === "phone") { setSavedPhone(value); setCandidate((p) => p ? { ...p, phone: value } : p); }
+      if (field === "studentId") { setSavedStudentId(value); setCandidate((p) => p ? { ...p, studentId: value } : p); }
+      
+      if (field === "faculty" || field === "department") {
+        const facVal = field === "faculty" ? value : (editingFields.has("faculty") ? editFaculty : savedFaculty);
+        const depVal = field === "department" ? value : (editingFields.has("department") ? editDepartment : savedDepartment);
+        setSavedFaculty(facVal);
+        setSavedDepartment(depVal);
+        setCandidate((p) => p ? { ...p, faculty: facVal, department: depVal } : p);
+        setEditingFields((prev) => {
+          const next = new Set(prev);
+          next.delete("faculty");
+          next.delete("department");
+          return next;
+        });
+        setFieldSuccess((prev) => ({
+          ...prev,
+          faculty: "Faculty is updated",
+          department: "Department is updated"
+        }));
+      } else {
+        setEditingFields((prev) => { const next = new Set(prev); next.delete(field); return next; });
+        const fieldLabels: Record<FieldKey, string> = {
+          name: "Name",
+          phone: "Phone number",
+          studentId: "University ID",
+          faculty: "Faculty",
+          department: "Department"
+        };
+        setFieldSuccess((prev) => ({ ...prev, [field]: `${fieldLabels[field]} is updated` }));
+      }
+    } catch {
+      setError("Unable to connect. Please check your connection and try again.");
+    } finally {
+      setFieldSaving(null);
+    }
+  };
+
   const handleSave = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     setError("");
     setSaveSuccess(false);
 
+    if (!savedName.trim()) {
+      setError("Name cannot be empty.");
+      return;
+    }
     if (preferences.some((preference) => !preference)) {
       setError("Select all four company preferences.");
       return;
@@ -134,7 +324,15 @@ export default function CandidateDashboardPage() {
       const response = await fetch("/api/v1/candidate/dashboard", {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ preferences, comment }),
+        body: JSON.stringify({
+          name: savedName,
+          phone: savedPhone,
+          studentId: savedStudentId,
+          faculty: savedFaculty,
+          department: savedDepartment,
+          preferences,
+          comment,
+        }),
       });
       const data = (await response.json()) as {
         success?: boolean;
@@ -147,11 +345,149 @@ export default function CandidateDashboardPage() {
       }
 
       setSaveSuccess(true);
+      setEditingFields(new Set());
+      setFieldSuccess({});
     } catch {
       setError("Unable to connect. Please check your connection and try again.");
     } finally {
       setIsSaving(false);
     }
+  };
+
+  /** Renders a single editable profile field with a Pencil/Save icon. */
+  const renderField = (
+    label: string,
+    field: FieldKey,
+    value: string,
+    setValue: (v: string) => void,
+    inputRef: React.RefObject<any>,
+    inputType = "text",
+    options?: readonly string[],
+  ) => {
+    const isEditing = editingFields.has(field);
+    const isSavingThis = fieldSaving === field;
+    const conflictMsg = (field === "phone" || field === "studentId") ? fieldConflict[field] : undefined;
+    const isChecking = (field === "phone" || field === "studentId") ? fieldChecking[field] : false;
+
+    let hasFormatError = false;
+    let formatErrorMsg = "";
+    if (isEditing && value.trim()) {
+      if (field === "phone" && value.trim().length !== 10) {
+        hasFormatError = true;
+        formatErrorMsg = "Phone number must be exactly 10 digits.";
+      } else if (field === "studentId" && !/^\d{6}[A-Z]$/.test(value.trim())) {
+        hasFormatError = true;
+        formatErrorMsg = "University ID must be 6 digits followed by 1 uppercase letter.";
+      }
+    }
+
+    const disableSave = fieldSaving !== null || !!conflictMsg || isChecking || hasFormatError;
+
+    const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+      if (!isEditing) return;
+      let val = e.target.value;
+      if (field === "phone") {
+        val = val.replace(/\D/g, "").slice(0, 10);
+      } else if (field === "studentId") {
+        val = val.replace(/[^0-9a-zA-Z]/g, "").toUpperCase().slice(0, 7);
+      }
+      setValue(val);
+      if (field === "phone" || field === "studentId") {
+        checkFieldUniqueness(field, val);
+      }
+    };
+
+    return (
+      <label key={field}>
+        <span>{label}</span>
+        <div className="field-input-wrap">
+          {options ? (
+            <select
+              ref={inputRef}
+              value={isEditing ? value : (
+                field === "faculty" ? savedFaculty :
+                savedDepartment
+              )}
+              onChange={handleChange}
+              disabled={!isEditing || isSavingThis || isSaving}
+              onKeyDown={(e) => {
+                if (!isEditing) return;
+                if (e.key === "Enter") {
+                  e.preventDefault();
+                  if (!disableSave) saveField(field, value.trim());
+                } else if (e.key === "Escape") {
+                  setEditingFields((prev) => { const next = new Set(prev); next.delete(field); return next; });
+                }
+              }}
+            >
+              <option value="" disabled>Select {label.toLowerCase()}</option>
+              {options.map((opt) => (
+                <option key={opt} value={opt}>{opt}</option>
+              ))}
+            </select>
+          ) : (
+            <input
+              ref={inputRef}
+              type={inputType}
+              value={isEditing ? value : (
+                field === "name" ? savedName :
+                field === "phone" ? savedPhone :
+                field === "studentId" ? savedStudentId :
+                field === "faculty" ? savedFaculty :
+                savedDepartment
+              )}
+              onChange={handleChange}
+              readOnly={!isEditing}
+              disabled={isSavingThis || isSaving}
+              onKeyDown={(e) => {
+                if (!isEditing) return;
+                if (e.key === "Enter") {
+                  e.preventDefault();
+                  if (!disableSave) saveField(field, value.trim());
+                } else if (e.key === "Escape") {
+                  setEditingFields((prev) => { const next = new Set(prev); next.delete(field); return next; });
+                }
+              }}
+            />
+          )}
+          {isEditing ? (
+            <button
+              type="button"
+              className="field-icon-btn field-icon-btn--save"
+              title={`Save ${label.toLowerCase()}`}
+              aria-label={`Save ${label.toLowerCase()}`}
+              disabled={disableSave}
+              onClick={() => saveField(field, value.trim())}
+            >
+              {isSavingThis || isChecking
+                ? <Loader2 size={14} className="signup-spinner" />
+                : <Save size={14} />}
+            </button>
+          ) : (
+            <button
+              type="button"
+              className="field-icon-btn field-icon-btn--edit"
+              title={`Edit ${label.toLowerCase()}`}
+              aria-label={`Edit ${label.toLowerCase()}`}
+              disabled={fieldSaving !== null || isSaving}
+              onClick={() => startEditing(field)}
+            >
+              <Pencil size={14} />
+            </button>
+          )}
+        </div>
+        {isEditing && (conflictMsg || formatErrorMsg) && (
+          <div style={{ color: "#e11d48", fontSize: "0.75rem", marginTop: "-0.2rem", fontWeight: 600 }}>
+            {conflictMsg || formatErrorMsg}
+          </div>
+        )}
+        {!isEditing && fieldSuccess[field] && (
+          <div style={{ color: "#2563eb", fontSize: "0.75rem", marginTop: "-0.2rem", fontWeight: 600 }}>
+            {fieldSuccess[field]}
+          </div>
+        )}
+      </label>
+    );
   };
 
   return (
@@ -191,19 +527,33 @@ export default function CandidateDashboardPage() {
               </div>
 
               <div className="application-details-grid">
-                {[
-                  ["Name", candidate.name],
-                  ["Email address", candidate.email],
-                  ["Phone number", candidate.phone],
-                  ["University ID", candidate.studentId],
-                  ["Faculty", candidate.faculty],
-                  ["Department", candidate.department],
-                ].map(([label, value]) => (
-                  <label key={label}>
-                    <span>{label}</span>
-                    <input type="text" value={value} readOnly />
-                  </label>
-                ))}
+                {renderField("Name", "name", editName, setEditName, nameRef)}
+                {renderField("Phone number", "phone", editPhone, setEditPhone, phoneRef)}
+                {renderField("University ID", "studentId", editStudentId, setEditStudentId, studentIdRef)}
+                {renderField("Faculty", "faculty", editFaculty, setEditFaculty, facultyRef, "text", faculties)}
+                {renderField(
+                  "Department",
+                  "department",
+                  editDepartment,
+                  setEditDepartment,
+                  departmentRef,
+                  "text",
+                  departmentsByFaculty[(editingFields.has("faculty") ? editFaculty : savedFaculty) as Faculty] || []
+                )}
+
+                {/* Email — permanently locked */}
+                <label>
+                  <span>Email address</span>
+                  <div className="field-input-wrap">
+                    <input type="email" value={candidate.email} readOnly />
+                    <span
+                      className="field-icon-btn field-icon-btn--locked"
+                      aria-label="Email cannot be changed"
+                    >
+                      <Lock size={14} />
+                    </span>
+                  </div>
+                </label>
               </div>
             </section>
 
